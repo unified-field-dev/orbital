@@ -6,7 +6,7 @@ license = "MIT"
 description = "Leptos component library and design system for focused, accessible product UIs"
 repository = "https://github.com/unified-field-dev/orbital"
 authors = ["Sean O'Rourke"]
-readme = "../README.md"
+readme = "README.md"
 
 [lints]
 workspace = true

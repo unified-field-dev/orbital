@@ -48,6 +48,19 @@ Do not push a `v*` tag until the local release gate passes:
 
 Tag deploys run full Playwright E2E and publish the preview catalog to GitHub Pages via [`.github/workflows/preview-pages.yml`](.github/workflows/preview-pages.yml).
 
+## Publishing preview
+
+One-time setup: **Settings → Pages → Build and deployment** → Source: **GitHub Actions**.
+
+After `preview_release_gate.sh` passes on `main`, push a version tag:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+The preview workflow publishes `target/site-preview/` to [Component preview](https://unified-field-dev.github.io/orbital/).
+
 ## Pull request expectations
 
 - Keep diffs focused; one logical change per PR when possible

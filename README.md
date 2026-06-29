@@ -6,32 +6,158 @@
 
 **Orbital** is a Leptos component library and design system for building focused, accessible product interfaces in Rust. It ships themed UI primitives, shared typed data models, and higher-level feature crates (tables, charts, scheduling, and more) that compose on the same tokens, motion vocabulary, and accessibility patterns.
 
-*A themed component stack for focused, accessible product UIs in Rust.*
-
 **Status:** v0.1.0 early release · [MIT](LICENSE) · [GitHub](https://github.com/unified-field-dev/orbital)
 
 **Requires:** nightly Rust ([`rust-toolchain.toml`](rust-toolchain.toml)) · [cargo-leptos](https://github.com/leptos-rs/cargo-leptos) **≥ 0.3.6** · Node 24+ for Playwright
 
-## Why Orbital
+## Quick start
 
-| Pain | Orbital answer |
-|------|----------------|
-| Reinventing tables, charts, and pickers per screen | Feature crates with shared tokens and typed data models |
-| Inconsistent spacing, motion, and brand tone | CSS-variable design language across shell, theme, and components |
-| Component docs that drift from code | `#[component_doc]` macro + live preview catalog with Playwright coverage (~460 previews) |
-| Heavy preview deps in production builds | `default-features = false` on component crates; enable `preview` only for the doc host |
+Add the facade crate from GitHub and wrap your app in [`OrbitalTemplate`](orbital/README.md):
 
-## What you get
+```toml
+[dependencies]
+orbital = { git = "https://github.com/unified-field-dev/orbital", default-features = false, features = ["hydrate"] }
+leptos = { version = "0.8", default-features = false, features = ["nightly"] }
+```
 
-- **Foundation components** — buttons, forms, navigation, overlays, tables, and layout primitives built for SSR and hydration.
-- **Feature crates** — data tables, charts, date/time pickers, schedulers, trees, and discussion threads for product-heavy screens.
-- **Design language** — spacing, typography, elevation, surface materials, brand tone, and motion tokens wired through CSS variables and theme hooks.
-- **Shared types** — UI-agnostic crates for datasets, paging, and datetime values so tables, charts, and schedulers agree on the same wire format.
-- **Live component preview** — every public component has an interactive doc page with examples and Playwright coverage.
+```rust,ignore
+use leptos::prelude::*;
+use orbital::{OrbitalTemplate, components::{
+    Button, ButtonAppearance, Card, CardContent, CardFooter, CardHeader,
+    CardHeaderAction, CardHeaderDescription, CardMedia, Field, Flex,
+    FlexGap, Input, InputAppearance, Subtitle1, Tooltip, TooltipPosition,
+}};
+
+#[component]
+fn App() -> impl IntoView {
+    let display_name = RwSignal::new(String::new());
+    let work_email = RwSignal::new(String::new());
+
+    view! {
+        <OrbitalTemplate>
+            <main style="padding: 24px; max-width: 420px; margin: 0 auto;">
+                <Card>
+                    <CardHeader>
+                        <Subtitle1>"Create your workspace"</Subtitle1>
+                        <CardHeaderDescription slot>
+                            "Set up a team space in a few steps."
+                        </CardHeaderDescription>
+                        <CardHeaderAction slot>
+                            <Tooltip content="More options" position=TooltipPosition::Bottom>
+                                <Button
+                                    appearance=ButtonAppearance::Transparent
+                                    icon=icondata::AiMoreOutlined
+                                    aria-label="More options"
+                                />
+                            </Tooltip>
+                        </CardHeaderAction>
+                    </CardHeader>
+                    <CardMedia
+                        src="https://picsum.photos/seed/orbital-workspace/420/160"
+                        alt="Workspace illustration"
+                        height=160
+                    />
+                    <CardContent>
+                        <Flex vertical=true gap=FlexGap::Medium full_width=true>
+                            <Field label="Display name" name="display_name">
+                                <Input
+                                    bind=display_name
+                                    appearance=InputAppearance::with_placeholder("Acme Team")
+                                />
+                            </Field>
+                            <Field label="Work email" name="email">
+                                <Input
+                                    bind=work_email
+                                    appearance=InputAppearance::email("you@company.com")
+                                />
+                            </Field>
+                        </Flex>
+                    </CardContent>
+                    <CardFooter>
+                        <Button appearance=ButtonAppearance::Secondary>"Cancel"</Button>
+                        <Button>"Create workspace"</Button>
+                    </CardFooter>
+                </Card>
+            </main>
+        </OrbitalTemplate>
+    }
+}
+```
+
+This demonstrates [`OrbitalTemplate`](orbital/README.md) shell · compound `Card` (header, media, body, footer) · `Field` + `Input` · `Tooltip` on an icon action · primary/secondary CTAs in `CardFooter`. Live docs for these components are in the [component preview](#component-preview) below.
+
+For SSR + hydrate feature flags, auth wiring, and `default-features = false` in production, see [`orbital/README.md`](orbital/README.md) and [orbital-macros/README.md — consumer feature flags](orbital-macros/README.md#consumer-feature-flags).
+
+## How Orbital compares
+
+Orbital targets **product-grade Leptos apps** — a cohesive design system plus first-party feature crates for data tables, charts, scheduling, discussion, and related application UI. Other frameworks ship broader primitive suites, but none combine this product-heavy feature set in one integrated Rust-native package set today. Public-surface counts below are approximate and not apples-to-apples (catalog pages vs. docs.rs modules vs. gallery entries).
+
+### Web UI frameworks (baseline)
+
+These are the **rendering layers** component libraries sit on. Orbital is **Leptos-only** today.
+
+| Framework | Reactivity | Typical web performance | SSR / full-stack | Notes |
+|-----------|------------|------------------------|------------------|-------|
+| [Leptos](https://leptos.dev/) | Fine-grained signals (no VDOM) | Strong for interactive UIs — updates track data changes, not whole trees | First-class (`cargo-leptos`, server functions) | Orbital’s foundation |
+| [Sycamore](https://sycamore.dev/) | Fine-grained signals (no VDOM) | Strong; same reactive model as Leptos | SSR + streaming supported | Smaller component-library ecosystem |
+| [Yew](https://yew.rs/) | Virtual DOM | Mature ecosystem; diffing overhead on large trees | Supported | Longest-running Rust WASM UI stack |
+| [Dioxus](https://dioxuslabs.com/) | Virtual DOM | Solid; VDOM diff cost vs signals | SSR + desktop/mobile targets | “Write once, run everywhere” focus |
+
+Component libraries inherit their framework’s runtime model. Orbital does not change Leptos’s signal performance — it adds typed components, tokens, and heavier widgets on top.
+
+### Component library comparison
+
+| Framework | Library | ~Public surface | Design system | Data table | Charts / viz | Scheduling | Live docs |
+|-----------|---------|----------------|---------------|------------|--------------|------------|-----------|
+| Leptos | **[Orbital](https://github.com/unified-field-dev/orbital)** (this repo) | ~220 catalog pages | Tokens, motion, materials, density | Sort, filter, edit, paging, grouping, pivot, export | Bar, line, area, pie, scatter, heatmap, gauge, sparkline | Calendar + timeline, drag-resize, resource lanes, event editing | [Component preview](https://unified-field-dev.github.io/orbital/) |
+| Leptos | [Radix-Leptos](https://github.com/cloud-shuttle/radix-leptos) | 57+ | Unstyled accessible primitives | — | — | — | [docs.rs](https://docs.rs/radix-leptos) |
+| Leptos | [Thaw UI](https://github.com/thaw-ui/thaw) | ~50+ (conservative) | Fluent-inspired | `Table` | — | — | [thawui.vercel.app](https://thawui.vercel.app) |
+| Leptos | [leptos-shadcn-ui](https://github.com/cloud-shuttle/leptos-shadcn-ui) | 25+ | shadcn / Tailwind | Basic `Table` | — | — | [docs.rs](https://docs.rs/leptos-shadcn-ui) |
+| Yew | [PatternFly Yew](https://github.com/patternfly-yew/patternfly-yew) | ~64 modules | PatternFly | `table` module | — | — | [docs.rs](https://docs.rs/patternfly-yew) |
+| Yew | [yew-bootstrap](https://github.com/isosphere/yew-bootstrap) | ~38 | Bootstrap | Basic table | — | — | [docs.rs](https://docs.rs/yew-bootstrap) |
+| Yew | [material-yew](https://material-yew.rm.rs/) | ~23 | Material Web Components | — | — | — | [material-yew.rm.rs](https://material-yew.rm.rs/) |
+| Dioxus | [Dioxus Components](https://github.com/DioxusLabs/components) | ~44 gallery entries | shadcn-style on unstyled primitives | — | — | — | [dioxuslabs.github.io/dioxus-components](https://dioxuslabs.github.io/dioxus-components/) |
+| Dioxus | [dioxus-daisyui](https://crates.io/crates/dioxus-daisyui) | DaisyUI set | Tailwind + DaisyUI | Basic table | — | — | [docs.rs](https://docs.rs/dioxus-daisyui) |
+
+Specialized widgets omitted from this table: [`yew-datatable`](https://docs.rs/yew-datatable-core) and [`table-rs`](https://crates.io/crates/table-rs) are table-focused libraries, not general component suites.
+
+## Documentation
+
+- **Foundation components** — buttons, forms, navigation, overlays, tables, and layout primitives for SSR and hydration.
+- **Feature crates** — data tables, charts, date/time pickers, schedulers, trees, and discussion for product-heavy screens ([datatable](orbital-datatable/README.md), [charts](orbital-charts/README.md), [date-pickers](orbital-date-pickers/README.md), [scheduler](orbital-scheduler/README.md), [discussion](orbital-discussion/README.md)).
+- **Design language** — spacing, typography, elevation, materials, brand tone, and motion via CSS variables and theme hooks ([Introduction](https://unified-field-dev.github.io/orbital/), [Theme](https://unified-field-dev.github.io/orbital/theme)).
+- **Shared types** — UI-agnostic `Dataset`, paging, and datetime crates so tables, charts, and schedulers share one wire format ([details below](#shared-types)).
+- **Live preview** — ~220 interactive catalog pages with examples and Playwright coverage.
+
+### Component preview
+
+**[Component preview](https://unified-field-dev.github.io/orbital/)** — browse the full catalog or jump to [Data Table](https://unified-field-dev.github.io/orbital/data-table), [Charts](https://unified-field-dev.github.io/orbital/bar-chart), [Date pickers](https://unified-field-dev.github.io/orbital/date-picker), [Scheduler](https://unified-field-dev.github.io/orbital/scheduler-calendar), [Discussion](https://unified-field-dev.github.io/orbital/discussion), and [Tree view](https://unified-field-dev.github.io/orbital/tree-view).
+
+Catalog pages are generated by the `#[component_doc]` macro in [`orbital-macros`](orbital-macros/README.md) — rustdoc, props metadata, and live examples stay in sync with the source.
+
+```rust,ignore
+use orbital_macros::component_doc;
+
+#[component_doc(
+    category = "Actions",
+    preview_slug = "button",
+    preview_label = "Button",
+)]
+#[component]
+pub fn Button(/* ... */) -> impl IntoView { /* ... */ }
+```
+
+Each entry becomes a page at `/orbital/{preview_slug}` (for example [Button](https://unified-field-dev.github.io/orbital/button)). Mark examples with `<!-- preview -->` in `# Examples` rustdoc; enable the crate `preview` feature only on the doc host. See [`orbital-macros/README.md`](orbital-macros/README.md) and [component testing](docs/component-testing.md).
+
+Local: `cargo leptos watch -p orbital-preview` → `http://127.0.0.1:3010/orbital/{slug}`
+
+### Repository docs
+
+[`orbital/README.md`](orbital/README.md) · [`orbital-macros/README.md`](orbital-macros/README.md) · [component testing](docs/component-testing.md) · `cargo doc -p orbital --open`
 
 ## Design language
 
-Orbital is more than a bag of widgets. Components share a single visual and interaction vocabulary:
+Components share a single visual and interaction vocabulary:
 
 | Layer | Crate | What it defines |
 |-------|-------|-----------------|
@@ -40,9 +166,10 @@ Orbital is more than a bag of widgets. Components share a single visual and inte
 | Motion | `orbital-motion` | Duration curves, presence transitions, reduced-motion respect |
 | Components | `orbital-core-components` | Themed controls that consume the tokens above |
 
-Authors wrap apps in `OrbitalThemeProvider` and compose shell chrome via [`OrbitalTemplate`](orbital/README.md). Capability is expressed through feature flags on each crate (for example `DataTableFeatures`, `ChartFeatures`) — not license-tier suffixes on type names.
+- **[Introduction (live)](https://unified-field-dev.github.io/orbital/)** — principles, color, elevation, typography, motion
+- **Crate READMEs:** [datatable](orbital-datatable/README.md) · [charts](orbital-charts/README.md) · [date-pickers](orbital-date-pickers/README.md) · [scheduler](orbital-scheduler/README.md) · [discussion](orbital-discussion/README.md)
 
-Feature crate overviews: [`orbital-datatable/README.md`](orbital-datatable/README.md), [`orbital-charts/README.md`](orbital-charts/README.md), [`orbital-date-pickers/README.md`](orbital-date-pickers/README.md), [`orbital-scheduler/README.md`](orbital-scheduler/README.md), [`orbital-discussion/README.md`](orbital-discussion/README.md).
+Authors wrap apps in `OrbitalThemeProvider` and compose shell chrome via [`OrbitalTemplate`](orbital/README.md). Capability is expressed through feature flags on each crate (for example `DataTableFeatures`, `ChartFeatures`) — not license-tier suffixes on type names.
 
 ## Shared types
 
@@ -61,91 +188,24 @@ Import the facade crate [`orbital`](orbital/) for shell, auth hooks, and `orbita
 
 ### Foundation
 
-Buttons, inputs, dialogs, drawers, menus, tabs, cards, lists, avatars, pagination, and layout (`Flex`, `Grid`, `Stack`, `ScrollArea`). Browse the live preview catalog at `/orbital/` when the preview server is running.
+Buttons, inputs, dialogs, drawers, menus, tabs, cards, lists, avatars, pagination, and layout (`Flex`, `Grid`, `Stack`, `ScrollArea`). Browse the [component preview](https://unified-field-dev.github.io/orbital/) or run `cargo leptos watch -p orbital-preview` locally.
 
 ### Feature crates
 
 | Product | Crate | Highlights |
 |---------|-------|------------|
-| Data Table | `orbital-datatable` | Sorting, filtering, editing, grouping, pivot, export, chart binding |
-| Charts | `orbital-charts` | Bar, line, pie, gauge, scatter, heatmap, zoom/pan, tooltips |
+| Data Table | `orbital-datatable` | Sorting, filtering, editing, paging, grouping, pivot, export, chart binding |
+| Charts | `orbital-charts` | Bar, line, area, pie, scatter, heatmap, gauge, sparkline, zoom/pan, tooltips |
 | Date Pickers | `orbital-date-pickers` | Calendar, fields, range pickers, timezone-aware `OrbitalDateTime` |
-| Scheduler | `orbital-scheduler` | Calendar and timeline views, drag-resize, resource lanes |
+| Scheduler | `orbital-scheduler` | Calendar and timeline views, drag-resize, resource lanes, event editing |
 | Tree | `orbital-tree` | Hierarchical navigation and selection |
 | Discussion | `orbital-discussion` | Threaded replies, composer, markdown, attachments |
-
-## Live preview
-
-The component preview catalog is published to GitHub Pages on each version tag (`v*`):
-
-**https://unified-field-dev.github.io/orbital/**
-
-| Page | URL |
-|------|-----|
-| Catalog home | [unified-field-dev.github.io/orbital](https://unified-field-dev.github.io/orbital) |
-| Button | [unified-field-dev.github.io/orbital/button](https://unified-field-dev.github.io/orbital/button) |
-| Data Table | [unified-field-dev.github.io/orbital/data-table](https://unified-field-dev.github.io/orbital/data-table) |
-| Charts | [unified-field-dev.github.io/orbital/bar-chart](https://unified-field-dev.github.io/orbital/bar-chart) |
-| Date Pickers | [unified-field-dev.github.io/orbital/date-picker](https://unified-field-dev.github.io/orbital/date-picker) |
-| Scheduler | [unified-field-dev.github.io/orbital/scheduler-calendar](https://unified-field-dev.github.io/orbital/scheduler-calendar) |
-| Discussion | [unified-field-dev.github.io/orbital/discussion](https://unified-field-dev.github.io/orbital/discussion) |
-| Tree | [unified-field-dev.github.io/orbital/tree-view](https://unified-field-dev.github.io/orbital/tree-view) |
-
-Local equivalent: `http://127.0.0.1:3010/{slug}` while `cargo leptos watch -p orbital-preview` is running.
-
-## Quick start
-
-Add the facade crate from GitHub (enable features per target):
-
-```toml
-[dependencies]
-orbital = { git = "https://github.com/unified-field-dev/orbital", default-features = false }
-leptos = { version = "0.8", default-features = false, features = ["nightly"] }
-```
-
-For SSR + hydrate, enable `orbital` features such as `ssr` and `hydrate` on the facade and dependent Leptos crates. For production component crates without the preview catalog, use `default-features = false` on each `orbital-*` dependency and enable only the features you need. See [orbital-macros/README.md](orbital-macros/README.md#consumer-feature-flags).
-
-```rust,ignore
-use leptos::prelude::*;
-use orbital::{orbital_shell, OrbitalTemplate};
-
-#[component]
-fn App() -> impl IntoView {
-    view! {
-        <OrbitalTemplate>
-            <main>"Hello Orbital"</main>
-        </OrbitalTemplate>
-    }
-}
-```
-
-See [`orbital/README.md`](orbital/README.md) for the preview workflow, auth context, and shell composition.
-
-## Workspace crates
-
-| Crate | Description |
-|-------|-------------|
-| `orbital` | Facade — stable import path for shell, primitives, previews |
-| `orbital-shell` | App shell chrome (layouts, marketing tokens, icons) |
-| `orbital-macros` | `#[component_doc]`, route extraction macros |
-| `orbital-theme` | Theme provider, density, mode, CSS variable injection |
-| `orbital-style` | Style registry and injected component CSS |
-| `orbital-motion` | Shared motion tokens and presence transitions |
-| `orbital-core-components` | Themed UI components |
-| `orbital-base-components` | Headless primitives (structure, semantics, a11y) |
-| `orbital-primitives` | Public primitives facade re-exported as `orbital::primitives` |
-| `orbital-data` | `Dataset` / `DataRecord` / `DataValue` typed model |
-| `orbital-paging` | `Page` / `PageRequest` paging wire types |
-| `orbital-markdown` | Markdown → HTML with citations |
-| `orbital-datatable`, `orbital-charts`, `orbital-date-pickers`, `orbital-scheduler`, `orbital-tree`, `orbital-discussion` | Feature product crates |
-| `orbital-preview-*` | Preview server for component docs and E2E (`:3010`) |
-| `component-preview-e2e` | Macro expansion test fixtures |
 
 ## Development
 
 **Toolchain:** nightly Rust (see `rust-toolchain.toml`), [cargo-leptos](https://github.com/leptos-rs/cargo-leptos) **≥ 0.3.6**, Node 24+ for Playwright.
 
-Self-hosted LoMT fonts (League Spartan, League Mono, Orbitron) live under [`public/fonts/`](public/fonts/) and are copied into the preview site by cargo-leptos. They are not generated by the build — ensure the `.woff2` files are present locally before running font-related E2E tests.
+**Fonts:** Orbital ships self-hosted [League of Moveable Type](https://www.theleagueofmoveabletype.com/) faces (League Spartan, League Mono, Orbitron) under [OFL 1.1](https://openfontlicense.org/). Files live in [`public/fonts/`](public/fonts/) and are copied into the preview site by cargo-leptos — they are not generated by the build. Ensure the `.woff2` files are present locally before running font-related E2E tests.
 
 `wasm-bindgen` is pinned to an exact patch version in the workspace `Cargo.toml` (currently `=0.2.108`) so it matches the `wasm-bindgen-cli` version used during `cargo leptos build`. If you see a schema version mismatch error, align `cargo-leptos`, the workspace pin, and your global `wasm-bindgen-cli` to the same patch version.
 
@@ -161,12 +221,12 @@ cargo test -p component-preview-e2e
 
 ```bash
 cargo leptos watch -p orbital-preview
-# http://127.0.0.1:3010/paginator
+# http://127.0.0.1:3010/orbital/button
 ```
 
 ### L3 — Browser E2E
 
-Playwright specs live in `end2end/tests/components/` (~460 component previews + smoke).
+Playwright specs live in `end2end/tests/components/` (259 spec files + smoke).
 
 **One-shot:**
 
@@ -187,7 +247,7 @@ cd end2end && npm test
 ./scripts/maintainer/preview_release_gate.sh
 ```
 
-Scans tracked release surface (`ip_release_gate.sh`), then runs full release-mode E2E (~1–2 hours). PR CI runs lean checks only; tag deploy runs the full gate via [`.github/workflows/preview-pages.yml`](.github/workflows/preview-pages.yml).
+Scans tracked release surface (`ip_release_gate.sh`), then runs full release-mode E2E (~1–2 hours). PR CI runs lean checks only; tag deploy runs the full gate via [`.github/workflows/preview-pages.yml`](.github/workflows/preview-pages.yml). Maintainers: see [CONTRIBUTING.md — Publishing preview](CONTRIBUTING.md#publishing-preview).
 
 ## Verify
 
@@ -206,32 +266,14 @@ cargo check -p orbital-tree --no-default-features
 cargo clippy --workspace --all-targets -- -D warnings
 ```
 
-## Documentation
+## License and support
 
-| Doc | Audience |
-|-----|----------|
-| [`orbital/README.md`](orbital/README.md) | Shell, auth, preview workflow |
-| [`orbital-macros/README.md`](orbital-macros/README.md) | `#[component_doc]`, consumer feature flags |
-| [`docs/component-testing.md`](docs/component-testing.md) | L1/L2/L3 testing, Playwright helpers |
-| Feature crate READMEs | Data table, charts, date pickers, scheduler, discussion |
-| `cargo doc -p orbital --open` | API reference (with `preview` features as needed) |
+Orbital is **open source and free** under [MIT](LICENSE).
 
-## `#[component_doc]`
+If Orbital helps your project, consider sponsoring development:
 
-See [orbital-macros/README.md](orbital-macros/README.md).
-
-## Publishing preview
-
-One-time setup: **Settings → Pages → Build and deployment** → Source: **GitHub Actions**.
-
-After `preview_release_gate.sh` passes on `main`, push a version tag:
-
-```bash
-git tag v0.1.0
-git push origin v0.1.0
-```
-
-The preview workflow publishes `target/site-preview/` to **https://unified-field-dev.github.io/orbital/**.
+- [GitHub Sponsors](https://github.com/sponsors/deathbreakfast)
+- [Patreon](https://www.patreon.com/cw/u4202798)
 
 ## Contributing
 
@@ -240,7 +282,3 @@ The preview workflow publishes `target/site-preview/` to **https://unified-field
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | Prerequisites, verify commands, PR expectations |
 | [`SECURITY.md`](SECURITY.md) | Report vulnerabilities privately |
 | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) | Community standards |
-
-## License
-
-MIT — see [LICENSE](LICENSE).

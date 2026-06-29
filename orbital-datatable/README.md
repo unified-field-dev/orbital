@@ -2,6 +2,17 @@
 
 Leptos **DataTable** — sortable, filterable, editable grids with paging, grouping, pivot, export, and optional chart binding.
 
+## Quick start
+
+```toml
+[dependencies]
+orbital-datatable = { git = "https://github.com/unified-field-dev/orbital", default-features = false }
+orbital = { git = "https://github.com/unified-field-dev/orbital", default-features = false, features = ["hydrate"] }
+leptos = { version = "0.8", default-features = false, features = ["nightly"] }
+```
+
+Use `default-features = false` in production; enable `preview` only for the doc host.
+
 ## Key types
 
 - `DataTable`, `DataTableColumnDef`, `DataTableRowModel`, `DataTableFeatures`
@@ -10,7 +21,7 @@ Leptos **DataTable** — sortable, filterable, editable grids with paging, group
 
 ## Preview
 
-Local: `http://127.0.0.1:3010/orbital/data-table` (with `cargo leptos watch -p orbital-preview`).
+[Data Table preview](https://unified-field-dev.github.io/orbital/data-table) · local `http://127.0.0.1:3010/orbital/data-table` (with `cargo leptos watch -p orbital-preview`)
 
 ## Deferred (not in current charter)
 
@@ -18,4 +29,4 @@ Local: `http://127.0.0.1:3010/orbital/data-table` (with `cargo leptos watch -p o
 
 ## Docs
 
-Consumer API: component rustdoc and preview catalog (`#[component_doc]`). Use `default-features = false` in production; enable `preview` for the doc host.
+Consumer API: component rustdoc and preview catalog (`#[component_doc]`). See [orbital-macros/README.md — consumer feature flags](../orbital-macros/README.md#consumer-feature-flags).

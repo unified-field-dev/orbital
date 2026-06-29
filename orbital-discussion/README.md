@@ -4,6 +4,17 @@ Composable Leptos **Discussion** library — threaded reply trees (Tree, Flat, C
 
 Consumers own data via Leptos signals and wire backends through integration APIs (adapter trait, hooks, callbacks).
 
+## Quick start
+
+```toml
+[dependencies]
+orbital-discussion = { git = "https://github.com/unified-field-dev/orbital", default-features = false }
+orbital = { git = "https://github.com/unified-field-dev/orbital", default-features = false, features = ["hydrate"] }
+leptos = { version = "0.8", default-features = false, features = ["nightly"] }
+```
+
+Use `default-features = false` in production; enable `preview` only for the doc host.
+
 ## Key types
 
 - `DiscussionThread`, `DiscussionReply`, `DiscussionComposer`
@@ -12,7 +23,7 @@ Consumers own data via Leptos signals and wire backends through integration APIs
 
 ## Preview
 
-Local: `http://127.0.0.1:3010/orbital/discussion` (with `cargo leptos watch -p orbital-preview`).
+[Discussion preview](https://unified-field-dev.github.io/orbital/discussion) · local `http://127.0.0.1:3010/orbital/discussion` (with `cargo leptos watch -p orbital-preview`)
 
 ## Scope
 
@@ -26,4 +37,4 @@ Local: `http://127.0.0.1:3010/orbital/discussion` (with `cargo leptos watch -p o
 
 ## Docs
 
-Consumer API: component rustdoc and preview catalog. CSS prefix: `orbital-discussion__*`. Use `default-features = false` in production; enable `preview` for the doc host.
+Consumer API: component rustdoc and preview catalog. CSS prefix: `orbital-discussion__*`. See [orbital-macros/README.md — consumer feature flags](../orbital-macros/README.md#consumer-feature-flags).

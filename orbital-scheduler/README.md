@@ -2,6 +2,17 @@
 
 Leptos scheduling views — calendar and timeline products with drag-resize, resource lanes, and event editing.
 
+## Quick start
+
+```toml
+[dependencies]
+orbital-scheduler = { git = "https://github.com/unified-field-dev/orbital", default-features = false }
+orbital = { git = "https://github.com/unified-field-dev/orbital", default-features = false, features = ["hydrate"] }
+leptos = { version = "0.8", default-features = false, features = ["nightly"] }
+```
+
+Use `default-features = false` in production; enable `preview` only for the doc host.
+
 ## Key types
 
 - `SchedulerCalendar`, `SchedulerTimeline`
@@ -10,7 +21,7 @@ Leptos scheduling views — calendar and timeline products with drag-resize, res
 
 ## Preview
 
-Local: `http://127.0.0.1:3010/orbital/scheduler-calendar` (with `cargo leptos watch -p orbital-preview`).
+[Scheduler preview](https://unified-field-dev.github.io/orbital/scheduler-calendar) · local `http://127.0.0.1:3010/orbital/scheduler-calendar` (with `cargo leptos watch -p orbital-preview`)
 
 ## Deferred (not in current charter)
 
@@ -19,4 +30,4 @@ Local: `http://127.0.0.1:3010/orbital/scheduler-calendar` (with `cargo leptos wa
 
 ## Docs
 
-Consumer API: component rustdoc and preview catalog. Use `default-features = false` in production; enable `preview` for the doc host.
+Consumer API: component rustdoc and preview catalog. See [orbital-macros/README.md — consumer feature flags](../orbital-macros/README.md#consumer-feature-flags).

@@ -1,28 +1,101 @@
 # Orbital
 
-Leptos UI component library.
-
-## Design language
-
-Orbital defines spacing tokens, typography presets, elevation ramps, and surface
-materials authors compose through shared components. Run the preview server to
-explore live component docs at `/orbital/{slug}`.
+Leptos UI component library and design system facade — shell, themed primitives, auth hooks, and preview catalog registration.
 
 ## Quick start
 
+```toml
+[dependencies]
+orbital = { git = "https://github.com/unified-field-dev/orbital", default-features = false, features = ["hydrate"] }
+leptos = { version = "0.8", default-features = false, features = ["nightly"] }
+```
+
 ```rust,ignore
 use leptos::prelude::*;
-use orbital::{orbital_shell, OrbitalTemplate};
+use orbital::{OrbitalTemplate, components::{
+    Button, ButtonAppearance, Card, CardContent, CardFooter, CardHeader,
+    CardHeaderAction, CardHeaderDescription, CardMedia, Field, Flex,
+    FlexGap, Input, InputAppearance, Subtitle1, Tooltip, TooltipPosition,
+}};
 
 #[component]
 fn App() -> impl IntoView {
+    let display_name = RwSignal::new(String::new());
+    let work_email = RwSignal::new(String::new());
+
     view! {
         <OrbitalTemplate>
-            <main>"Hello Orbital"</main>
+            <Card>
+                <CardHeader>
+                    <Subtitle1>"Create your workspace"</Subtitle1>
+                    <CardHeaderDescription slot>
+                        "Set up a team space in a few steps."
+                    </CardHeaderDescription>
+                    <CardHeaderAction slot>
+                        <Tooltip content="More options" position=TooltipPosition::Bottom>
+                            <Button
+                                appearance=ButtonAppearance::Transparent
+                                icon=icondata::AiMoreOutlined
+                                aria-label="More options"
+                            />
+                        </Tooltip>
+                    </CardHeaderAction>
+                </CardHeader>
+                <CardMedia
+                    src="https://picsum.photos/seed/orbital-workspace/420/160"
+                    alt="Workspace illustration"
+                    height=160
+                />
+                <CardContent>
+                    <Flex vertical=true gap=FlexGap::Medium full_width=true>
+                        <Field label="Display name" name="display_name">
+                            <Input
+                                bind=display_name
+                                appearance=InputAppearance::with_placeholder("Acme Team")
+                            />
+                        </Field>
+                        <Field label="Work email" name="email">
+                            <Input
+                                bind=work_email
+                                appearance=InputAppearance::email("you@company.com")
+                            />
+                        </Field>
+                    </Flex>
+                </CardContent>
+                <CardFooter>
+                    <Button appearance=ButtonAppearance::Secondary>"Cancel"</Button>
+                    <Button>"Create workspace"</Button>
+                </CardFooter>
+            </Card>
         </OrbitalTemplate>
     }
 }
 ```
+
+## Documentation
+
+| Resource | Description |
+|----------|-------------|
+| [Introduction](https://unified-field-dev.github.io/orbital/) | Design principles, tokens, typography, motion |
+| [Theme](https://unified-field-dev.github.io/orbital/theme) | Mode, density, CSS variables |
+| [Component preview](https://unified-field-dev.github.io/orbital/) | Full interactive catalog |
+
+Local catalog: `cargo leptos watch -p orbital-preview` → `http://127.0.0.1:3010/orbital/{slug}`
+
+## Features
+
+| Feature | Purpose |
+|---------|---------|
+| `default-features = false` | Production builds without preview catalog deps |
+| `hydrate` | Client hydration + theme/style/shell |
+| `ssr` | Server rendering with Axum integration |
+| `preview` | `#[component_doc]` catalog metadata (doc host only) |
+
+Use `default-features = false` and enable only the features you need. See [orbital-macros/README.md — consumer feature flags](../orbital-macros/README.md#consumer-feature-flags).
+
+## Design language
+
+Orbital defines spacing tokens, typography presets, elevation ramps, and surface materials authors compose through shared components. Read the live [Introduction](https://unified-field-dev.github.io/orbital/) for principles and token chapters.
 
 ## Composition
 
@@ -32,4 +105,4 @@ fn App() -> impl IntoView {
 
 Capability flags on feature crates (for example `DataTableFeatures`, `ChartFeatures`) express optional behavior — not license-tier suffixes on type names.
 
-See the [repository README](../README.md) for workspace layout and testing.
+See the [repository README](../README.md) for workspace layout, testing, and development.
