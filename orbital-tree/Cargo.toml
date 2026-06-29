@@ -1,0 +1,23 @@
+[package]
+name = "orbital-tree"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[lints]
+workspace = true
+
+[lib]
+doctest = false
+
+[dependencies]
+orbital-core-components = { path = "../orbital-core-components", default-features = false }
+leptos.workspace = true
+icondata_core.workspace = true
+inventory = { version = "0.3", optional = true }
+
+[features]
+default = ["preview"]
+preview = ["dep:inventory", "orbital-core-components/preview"]
+hydrate = ["leptos/hydrate", "orbital-core-components/hydrate", "preview", "dep:inventory"]
+ssr = ["leptos/ssr", "orbital-core-components/ssr", "preview", "dep:inventory"]

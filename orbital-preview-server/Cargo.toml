@@ -1,0 +1,28 @@
+[package]
+name = "orbital-preview-server"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[lints]
+workspace = true
+
+[[bin]]
+name = "orbital-preview-server"
+path = "src/main.rs"
+
+[dependencies]
+orbital-preview-app = { path = "../orbital-preview-app", default-features = false, features = ["ssr"] }
+leptos = { workspace = true, features = ["ssr"] }
+leptos_axum = { workspace = true }
+axum.workspace = true
+tokio.workspace = true
+simple_logger.workspace = true
+log.workspace = true
+any_spawner = { version = "0.3", features = ["futures-executor"] }
+tower-http.workspace = true
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"] }
+
+[features]
+default = []
+ssr = ["orbital-preview-app/ssr"]

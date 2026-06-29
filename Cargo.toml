@@ -1,0 +1,120 @@
+[workspace]
+resolver = "2"
+members = [
+    "orbital",
+    "orbital-shell",
+    "orbital-macros",
+    "orbital-core-components",
+    "orbital-base-components",
+    "orbital-style",
+    "orbital-motion",
+    "orbital-primitives",
+    "orbital-datatable",
+    "orbital-discussion",
+    "orbital-markdown",
+    "orbital-charts",
+    "orbital-date-pickers",
+    "orbital-scheduler",
+    "orbital-tree",
+    "orbital-paging",
+    "orbital-data",
+    "component-preview-e2e",
+    "orbital-theme",
+    "orbital-preview-app",
+    "orbital-preview-frontend",
+    "orbital-preview-server",
+]
+
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+unused = { level = "warn", priority = -1 }
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+redundant_locals = "allow"
+question_mark = "allow"
+too_many_arguments = "allow"
+type_complexity = "allow"
+clone_on_copy = "allow"
+module_inception = "allow"
+needless_range_loop = "allow"
+unused_unit = "allow"
+
+[profile.release]
+codegen-units = 16
+lto = "thin"
+opt-level = "z"
+
+[profile.dev]
+incremental = true
+
+[profile.dev.package."*"]
+opt-level = 1
+
+[workspace.dependencies]
+leptos = { version = "0.8.5", default-features = false, features = ["nightly"] }
+leptos_meta = { version = "0.8.5" }
+leptos_router = { version = "0.8.5", features = ["nightly"] }
+leptos_axum = { version = "0.8.5" }
+leptos-use = { version = "0.18", default-features = false }
+codee = { version = "0.3", default-features = false }
+chrono = { version = "0.4", default-features = false, features = ["clock", "std", "wasmbind"] }
+
+icondata = { version = "0.4.0", default-features = false, features = ["ant-design-icons", "box-icons", "lucide"] }
+icondata_core = "0.1.0"
+
+turf = "0.10"
+
+axum = "0.8.4"
+cfg-if = "1.0.0"
+console_error_panic_hook = "0.1.7"
+console_log = "0.1.0"
+http = "1.3.1"
+log = "0.4.27"
+simple_logger = "5.0.0"
+thiserror = "2.0.12"
+tokio = { version = "1.45.0", features = ["full"] }
+tower = { version = "0.5.2", features = ["full"] }
+tower-http = { version = "0.6.4", features = ["full"] }
+wasm-bindgen = "=0.2.108"
+wasm-bindgen-futures = "=0.4.58"
+js-sys = "=0.3.85"
+web-sys = "=0.3.85"
+
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+anyhow = "1"
+async-trait = "0.1"
+uuid = { version = "1", features = ["v4"] }
+
+[[workspace.metadata.leptos]]
+name = "orbital-preview"
+output-name = "orbital-preview"
+bin-package = "orbital-preview-server"
+lib-package = "orbital-preview-frontend"
+site-root = "target/site-preview"
+site-pkg-dir = "pkg"
+style-file = "style/main.scss"
+assets-dir = "public"
+site-addr = "127.0.0.1:3010"
+reload-port = 3011
+browserquery = "defaults"
+watch = false
+env = "DEV"
+bin-features = ["ssr"]
+lib-features = ["hydrate"]
+bin-default-features = false
+lib-default-features = false
+# `cargo leptos end-to-end --project orbital-preview` serves on site-addr (:3010) then runs
+# `npm test` in end2end/ (COMPONENT_PREVIEW_E2E=1 + Playwright baseURL :3010).
+end2end-cmd = "npm test"
+end2end-dir = "end2end"
+
+# Patched reactive_graph silences spurious SSR/hydrate "outside a reactive tracking context"
+# warnings (see vendor/reactive_graph/src/lib.rs log_warning). Real reactivity: end2end/smoke/reactivity-canary.spec.ts
+[patch.crates-io]
+reactive_graph = { path = "vendor/reactive_graph" }
+proc-macro-error2 = { path = "vendor/proc_macro_error2" }
+proc-macro-error-attr2 = { path = "vendor/proc_macro_error_attr2" }

@@ -1,0 +1,5 @@
+Intro summary.
+
+# Best Practices
+
+* Reset `offset` when filters change.

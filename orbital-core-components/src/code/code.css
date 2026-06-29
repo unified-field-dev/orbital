@@ -1,0 +1,19 @@
+.orbital-code {
+    display: block;
+    box-sizing: border-box;
+    font-size: var(--orb-type-size-sm);
+    font-family: var(--orb-type-family-mono);
+    color: var(--orb-color-code-fg);
+    background: var(--orb-color-code-bg);
+    padding: var(--orb-space-block-sm) var(--orb-space-inline-md);
+    border-radius: var(--orb-radius-md);
+}
+
+.orbital-code pre {
+    margin: 0;
+    line-height: var(--orb-type-line-md);
+    font-size: inherit;
+    font-family: inherit;
+    color: inherit;
+    background: transparent;
+}

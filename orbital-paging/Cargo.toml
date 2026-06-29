@@ -1,0 +1,28 @@
+[package]
+name = "orbital-paging"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Shared paging primitives (Page<T>, PageRequest) for Orbital apps"
+
+[lints]
+workspace = true
+
+[dependencies]
+serde = { workspace = true, features = ["derive"] }
+orbital-data = { path = "../orbital-data" }
+
+# Optional: Leptos integration for the `use_paged_infinite_scroll` hook.
+# Kept behind a feature flag so SSR-only consumers (server functions returning
+# Page<T>) keep their zero-framework dependency.
+leptos = { workspace = true, optional = true }
+leptos-use = { workspace = true, optional = true, features = ["use_infinite_scroll"] }
+
+[dev-dependencies]
+serde_json = { workspace = true }
+
+[features]
+default = []
+leptos = ["dep:leptos", "dep:leptos-use"]
+hydrate = ["leptos", "leptos/hydrate"]
+ssr = ["leptos", "leptos/ssr"]

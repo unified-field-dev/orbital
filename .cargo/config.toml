@@ -1,0 +1,4 @@
+# Match cargo-leptos compile env so HydrationScripts references the same WASM
+# filename as wasm-bindgen output (orbital-preview.wasm, not orbital-preview_bg.wasm).
+[env]
+LEPTOS_OUTPUT_NAME = "orbital-preview"

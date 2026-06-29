@@ -1,0 +1,13 @@
+[package]
+name = "orbital-data"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Shared typed dataset primitives (Dataset, DataRecord, DataValue) for Orbital tables and charts"
+
+[lints]
+workspace = true
+
+[dependencies]
+serde = { workspace = true, features = ["derive"] }
+chrono = { workspace = true, features = ["serde"] }

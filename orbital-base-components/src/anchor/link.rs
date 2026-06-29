@@ -1,0 +1,88 @@
+use leptos::{html, prelude::*};
+
+use super::AnchorInjection;
+
+/// Headless anchor link item registered with the parent [`BaseAnchor`] rail.
+#[component]
+pub fn BaseAnchorLink(
+    #[prop(optional, into)] class: MaybeProp<String>,
+    #[prop(into)] title: Signal<String>,
+    #[prop(into)] href: String,
+    #[prop(optional)] children: Option<Children>,
+) -> impl IntoView {
+    let anchor = AnchorInjection::expect_context();
+    let title_ref = NodeRef::<html::A>::new();
+    let href_id = StoredValue::new(None::<String>);
+    let is_active = Memo::new(move |_| {
+        href_id.with_value(|href_id| {
+            href_id.as_ref().is_some_and(|id| {
+                anchor
+                    .active_id
+                    .with(|active_id| active_id.as_ref() == Some(id))
+            })
+        })
+    });
+
+    if !href.is_empty() && href.starts_with('#') {
+        let id = href[1..].to_string();
+        href_id.set_value(Some(id.clone()));
+        anchor.append_id(id);
+
+        on_cleanup(move || {
+            href_id.with_value(|id| {
+                if let Some(id) = id {
+                    anchor.remove_id(id);
+                }
+            });
+        });
+
+        #[cfg(any(feature = "hydrate", not(feature = "ssr")))]
+        Effect::new(move |_| {
+            let Some(title_el) = title_ref.get() else {
+                return;
+            };
+            if is_active.get() {
+                let title_rect = title_el.get_bounding_client_rect();
+                anchor.update_background_position(title_rect);
+            }
+        });
+    }
+
+    let on_click = move |event: leptos::ev::MouseEvent| {
+        event.prevent_default();
+        href_id.with_value(|href_id| {
+            if let Some(href_id) = href_id {
+                anchor.scroll_into_view(href_id);
+            }
+        });
+    };
+
+    let root_class = move || {
+        let mut parts = vec!["orbital-anchor-link".to_string()];
+        if is_active.get() {
+            parts.push("orbital-anchor-link--active".to_string());
+        }
+        if let Some(extra) = class.get() {
+            let extra = extra.trim();
+            if !extra.is_empty() {
+                parts.push(extra.to_string());
+            }
+        }
+        parts.join(" ")
+    };
+
+    view! {
+        <div class=root_class>
+            <a
+                href=href.clone()
+                class="orbital-anchor-link__title"
+                on:click=on_click
+                node_ref=title_ref
+                title=move || title.get()
+            >
+                {move || title.get()}
+            </a>
+            {children.map(|children| view! { <div class="orbital-anchor-link__children">{children()}</div> })}
+        </div>
+    }
+}

@@ -1,0 +1,23 @@
+Summary paragraph for paginator.
+
+# When to use
+
+- Tables with page controls
+
+# Usage
+
+1. Create offset signal.
+
+# Best Practices
+
+## Do's
+
+* Reset offset on filter change.
+
+# Examples
+
+## Default pagination
+<!-- preview -->
+```rust
+view! { <div>"demo"</div> }
+```

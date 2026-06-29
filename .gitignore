@@ -1,0 +1,11 @@
+/target/
+/target-test/
+/target/ws-test/
+/target-site-preview/
+/end2end/node_modules/
+/end2end/test-results/
+/end2end/playwright-report/
+/end2end/blob-report/
+__dev_scripts/
+.DS_Store
+docs/internal/

@@ -1,0 +1,87 @@
+.orbital-tab {
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+    outline-style: none;
+    position: relative;
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: auto;
+    grid-auto-flow: column;
+    column-gap: var(--orb-space-inline-snudge);
+    background-color: var(--orb-color-transparent-bg);
+    line-height: var(--orb-type-line-md);
+    font-family: var(--orb-type-family-sans);
+    text-transform: none;
+    padding: var(--orb-space-block-md) var(--orb-space-inline-mnudge);
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: var(--orb-radius-md);
+    border: none;
+}
+
+.orbital-tab::before {
+    right: var(--orb-space-inline-md);
+    left: var(--orb-space-inline-md);
+    height: var(--orb-stroke-thicker);
+    bottom: 0px;
+}
+
+.orbital-tab:hover::before {
+    position: absolute;
+    content: "";
+    background-color: var(--orb-color-border-default-hover);
+    border-radius: var(--orb-radius-circular);
+}
+
+.orbital-tab:active::before {
+    position: absolute;
+    content: "";
+    background-color: var(--orb-color-border-default-pressed);
+    border-radius: var(--orb-radius-circular);
+}
+
+.orbital-tab__content {
+    grid-row-start: 1;
+    grid-column-start: 1;
+    padding: var(--orb-space-block-none) var(--orb-space-inline-2xs);
+    color: var(--orb-color-text-secondary);
+    line-height: var(--orb-type-line-md);
+    font-weight: var(--orb-type-weight-regular);
+    font-size: var(--orb-type-size-sm);
+    overflow: hidden;
+}
+
+.orbital-tab:hover .orbital-tab__content {
+    color: var(--orb-color-text-secondary-hover);
+}
+
+.orbital-tab:active .orbital-tab__content {
+    color: var(--orb-color-text-secondary-pressed);
+}
+
+.orbital-tab--selected {
+    overflow: visible;
+}
+
+.orbital-tab--selected .orbital-tab__content {
+    text-shadow: -0.06ex 0 0 currentColor, 0.06ex 0 0 currentColor;
+}
+
+@supports (-webkit-text-stroke-width: 0.04ex) {
+    .orbital-tab--selected .orbital-tab__content {
+        text-shadow: -0.03ex 0 0 currentColor, 0.03ex 0 0 currentColor;
+        -webkit-text-stroke-width: 0.04ex;
+    }
+}
+
+.orbital-tab--selected::after {
+    position: absolute;
+    content: "";
+    right: var(--orb-space-inline-md);
+    left: var(--orb-space-inline-md);
+    height: var(--orb-stroke-thicker);
+    bottom: 0px;
+    background-color: var(--orb-color-brand-compound-stroke);
+    border-radius: var(--orb-radius-circular);
+}

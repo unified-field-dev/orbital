@@ -1,0 +1,20 @@
+[package]
+name = "orbital-theme"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[lints]
+workspace = true
+
+[dependencies]
+leptos.workspace = true
+orbital-style = { path = "../orbital-style", default-features = false }
+uuid = { version = "1.10", features = ["v4", "js"] }
+getset = "0.1.5"
+orbital-macros = { path = "../orbital-macros" }
+
+[features]
+default = []
+hydrate = ["leptos/hydrate", "orbital-style/hydrate"]
+ssr = ["leptos/ssr", "orbital-style/ssr"]

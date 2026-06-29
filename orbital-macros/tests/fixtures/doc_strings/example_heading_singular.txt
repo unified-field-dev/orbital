@@ -1,0 +1,9 @@
+Summary.
+
+# Example
+
+## Default pagination
+<!-- preview -->
+```rust
+view! { <div>"one"</div> }
+```

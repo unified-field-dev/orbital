@@ -1,0 +1,8 @@
+.orbital-tab-list {
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    flex-shrink: 0;
+    align-items: stretch;
+}

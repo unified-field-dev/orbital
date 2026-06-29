@@ -1,0 +1,19 @@
+[package]
+name = "orbital-style"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[lints]
+workspace = true
+
+[dependencies]
+leptos.workspace = true
+leptos_meta.workspace = true
+cfg-if.workspace = true
+send_wrapper = "0.6"
+
+[features]
+default = []
+hydrate = ["leptos/hydrate"]
+ssr = ["leptos/ssr"]

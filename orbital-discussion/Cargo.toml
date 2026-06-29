@@ -1,0 +1,38 @@
+[package]
+name = "orbital-discussion"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[lints]
+workspace = true
+
+[lib]
+doctest = false
+
+[dependencies]
+ammonia = "4"
+bitflags = "2"
+chrono.workspace = true
+orbital-markdown = { path = "../orbital-markdown" }
+pulldown-cmark = "0.13"
+leptos.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+wasm-bindgen = { workspace = true, optional = true }
+js-sys = { workspace = true, optional = true }
+web-sys = { workspace = true, optional = true, features = ["Document", "Element", "File", "FileList", "HtmlElement", "HtmlInputElement", "HtmlTextAreaElement"] }
+orbital-base-components = { path = "../orbital-base-components" }
+orbital-core-components = { path = "../orbital-core-components", default-features = false }
+orbital-macros = { path = "../orbital-macros" }
+orbital-style = { path = "../orbital-style" }
+orbital-theme = { path = "../orbital-theme", default-features = false }
+icondata.workspace = true
+icondata_core.workspace = true
+inventory = { version = "0.3", optional = true }
+
+[features]
+default = ["preview"]
+preview = ["dep:inventory", "orbital-core-components/preview"]
+hydrate = ["leptos/hydrate", "orbital-core-components/hydrate", "orbital-theme/hydrate", "preview", "dep:inventory", "dep:wasm-bindgen", "dep:js-sys", "dep:web-sys"]
+ssr = ["leptos/ssr", "orbital-core-components/ssr", "orbital-theme/ssr", "preview", "dep:inventory"]

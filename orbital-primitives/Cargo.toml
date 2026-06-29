@@ -1,0 +1,68 @@
+[package]
+name = "orbital-primitives"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[lints]
+workspace = true
+
+[lib]
+doctest = false
+
+[dependencies]
+leptos.workspace = true
+orbital-core-components = { path = "../orbital-core-components", default-features = false }
+orbital-theme = { path = "../orbital-theme", default-features = false }
+orbital-base-components = { path = "../orbital-base-components" }
+orbital-datatable = { path = "../orbital-datatable", default-features = false }
+orbital-date-pickers = { path = "../orbital-date-pickers", default-features = false }
+orbital-charts = { path = "../orbital-charts", default-features = false }
+orbital-tree = { path = "../orbital-tree", default-features = false }
+orbital-scheduler = { path = "../orbital-scheduler", default-features = false }
+orbital-discussion = { path = "../orbital-discussion", default-features = false }
+orbital-macros = { path = "../orbital-macros" }
+icondata.workspace = true
+icondata_core.workspace = true
+turf.workspace = true
+inventory = { version = "0.3", optional = true }
+
+[features]
+default = ["preview"]
+preview = [
+    "orbital-core-components/preview",
+    "orbital-datatable/preview",
+    "orbital-date-pickers/preview",
+    "orbital-charts/preview",
+    "orbital-charts/datatable-integration",
+    "orbital-tree/preview",
+    "orbital-scheduler/preview",
+    "orbital-discussion/preview",
+    "dep:inventory",
+]
+hydrate = [
+    "leptos/hydrate",
+    "orbital-core-components/hydrate",
+    "orbital-theme/hydrate",
+    "orbital-datatable/hydrate",
+    "orbital-date-pickers/hydrate",
+    "orbital-charts/hydrate",
+    "orbital-tree/hydrate",
+    "orbital-scheduler/hydrate",
+    "orbital-discussion/hydrate",
+    "preview",
+    "dep:inventory",
+]
+ssr = [
+    "leptos/ssr",
+    "orbital-core-components/ssr",
+    "orbital-theme/ssr",
+    "orbital-datatable/ssr",
+    "orbital-date-pickers/ssr",
+    "orbital-charts/ssr",
+    "orbital-tree/ssr",
+    "orbital-scheduler/ssr",
+    "orbital-discussion/ssr",
+    "preview",
+    "dep:inventory",
+]

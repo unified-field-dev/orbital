@@ -1,0 +1,110 @@
+[package]
+name = "orbital-preview-app"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[lints.rust]
+unsafe_code = "allow"
+unused = { level = "warn", priority = -1 }
+
+[lints.clippy]
+all = { level = "warn", priority = -1 }
+redundant_locals = "allow"
+question_mark = "allow"
+too_many_arguments = "allow"
+type_complexity = "allow"
+clone_on_copy = "allow"
+module_inception = "allow"
+needless_range_loop = "allow"
+unused_unit = "allow"
+
+[dependencies]
+leptos.workspace = true
+leptos_meta.workspace = true
+leptos_router.workspace = true
+icondata.workspace = true
+icondata_core.workspace = true
+turf.workspace = true
+
+orbital = { path = "../orbital", default-features = false }
+orbital-base-components = { path = "../orbital-base-components" }
+orbital-macros = { path = "../orbital-macros" }
+orbital-primitives = { path = "../orbital-primitives", default-features = false }
+orbital-theme = { path = "../orbital-theme", default-features = false }
+orbital-style = { path = "../orbital-style", default-features = false }
+orbital-core-components = { path = "../orbital-core-components", default-features = false }
+orbital-datatable = { path = "../orbital-datatable", default-features = false }
+orbital-date-pickers = { path = "../orbital-date-pickers", default-features = false }
+orbital-charts = { path = "../orbital-charts", default-features = false }
+orbital-tree = { path = "../orbital-tree", default-features = false }
+orbital-scheduler = { path = "../orbital-scheduler", default-features = false }
+orbital-discussion = { path = "../orbital-discussion", default-features = false }
+orbital-motion = { path = "../orbital-motion", default-features = false }
+component-preview-e2e = { path = "../component-preview-e2e" }
+
+[features]
+default = []
+hydrate = [
+    "leptos/hydrate",
+    "orbital/hydrate",
+    "orbital/preview",
+    "orbital-base-components/hydrate",
+    "orbital-primitives/hydrate",
+    "orbital-primitives/preview",
+    "orbital-core-components/hydrate",
+    "orbital-core-components/preview",
+    "orbital-theme/hydrate",
+    "orbital-style/hydrate",
+    "orbital-datatable/hydrate",
+    "orbital-datatable/preview",
+    "orbital-date-pickers/hydrate",
+    "orbital-date-pickers/preview",
+    "orbital-charts/hydrate",
+    "orbital-charts/preview",
+    "orbital-charts/datatable-integration",
+    "orbital-tree/hydrate",
+    "orbital-tree/preview",
+    "orbital-scheduler/hydrate",
+    "orbital-scheduler/preview",
+    "orbital-discussion/hydrate",
+    "orbital-discussion/preview",
+    "orbital-motion/hydrate",
+    "orbital-motion/preview",
+]
+ssr = [
+    "leptos/ssr",
+    "leptos_meta/ssr",
+    "leptos_router/ssr",
+    "orbital/ssr",
+    "orbital/preview",
+    "orbital-base-components/ssr",
+    "orbital-primitives/ssr",
+    "orbital-primitives/preview",
+    "orbital-core-components/ssr",
+    "orbital-core-components/preview",
+    "orbital-theme/ssr",
+    "orbital-style/ssr",
+    "orbital-datatable/ssr",
+    "orbital-datatable/preview",
+    "orbital-date-pickers/ssr",
+    "orbital-date-pickers/preview",
+    "orbital-charts/ssr",
+    "orbital-charts/preview",
+    "orbital-charts/datatable-integration",
+    "orbital-tree/ssr",
+    "orbital-tree/preview",
+    "orbital-scheduler/ssr",
+    "orbital-scheduler/preview",
+    "orbital-discussion/ssr",
+    "orbital-discussion/preview",
+    "orbital-motion/ssr",
+    "orbital-motion/preview",
+]
+
+[package.metadata.turf]
+minify = true
+load_paths = ["src/styles"]
+
+[package.metadata.turf-dev]
+minify = false

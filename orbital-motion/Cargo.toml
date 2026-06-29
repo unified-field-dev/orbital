@@ -1,0 +1,37 @@
+[package]
+name = "orbital-motion"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[lints]
+workspace = true
+
+[lib]
+doctest = false
+
+[dependencies]
+leptos.workspace = true
+leptos_transition_group = "0.2.0"
+orbital-style = { path = "../orbital-style", default-features = false }
+orbital-macros = { path = "../orbital-macros", optional = true }
+turf.workspace = true
+icondata.workspace = true
+icondata_core.workspace = true
+inventory = { version = "0.3", optional = true }
+pulldown-cmark = { version = "0.13", optional = true }
+wasm-bindgen = { workspace = true, optional = true }
+web-sys = { workspace = true, features = ["CssStyleDeclaration", "Element", "EventTarget", "HtmlElement", "MediaQueryList"] }
+
+[features]
+default = ["preview"]
+preview = ["dep:inventory", "dep:orbital-macros", "dep:pulldown-cmark"]
+hydrate = [
+    "leptos/hydrate",
+    "orbital-style/hydrate",
+    "preview",
+    "dep:inventory",
+    "dep:pulldown-cmark",
+    "dep:wasm-bindgen",
+]
+ssr = ["leptos/ssr", "orbital-style/ssr", "preview", "dep:inventory", "dep:pulldown-cmark"]

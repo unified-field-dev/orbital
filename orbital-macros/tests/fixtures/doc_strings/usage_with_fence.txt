@@ -1,0 +1,35 @@
+Flexbox layout container for arranging children in a row or column.
+
+# When to use
+
+- One-dimensional layouts: toolbars, button groups, form rows
+
+# Usage
+
+1. Choose direction: default row, or `vertical=true` for a column stack.
+2. Set `gap` to a preset or custom size.
+
+Minimal row (docs snippet — not a live preview):
+
+```rust
+view! {
+    <Flex gap=FlexGap::Medium>
+        <Button>"Save"</Button>
+        <Button appearance=ButtonAppearance::Secondary>"Cancel"</Button>
+    </Flex>
+}
+```
+
+# Best Practices
+
+## Do's
+
+* Use `gap` instead of margin hacks between items.
+
+# Examples
+
+## Default row
+<!-- preview -->
+```rust
+view! { <div data-testid="flex-preview">"demo"</div> }
+```

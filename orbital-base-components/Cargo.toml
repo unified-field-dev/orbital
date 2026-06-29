@@ -1,0 +1,39 @@
+[package]
+name = "orbital-base-components"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[lints]
+workspace = true
+
+[lib]
+doctest = false
+
+[dependencies]
+leptos.workspace = true
+turf.workspace = true
+icondata_core.workspace = true
+icondata.workspace = true
+chrono.workspace = true
+reactive_stores = { version = "0.2", default-features = false }
+uuid = { workspace = true }
+wasm-bindgen = { workspace = true }
+web-sys = { version = "0.3", features = ["CssStyleDeclaration", "DataTransfer", "Document", "DomRect", "Element", "EventTarget", "FileList", "HtmlDivElement", "HtmlElement", "HtmlInputElement", "Node", "NodeFilter", "Performance", "ScrollBehavior", "ScrollToOptions", "TreeWalker"] }
+leptos_transition_group = "0.2.0"
+orbital-theme = { path = "../orbital-theme", default-features = false }
+orbital-style = { path = "../orbital-style", default-features = false }
+orbital-motion = { path = "../orbital-motion", default-features = false }
+orbital-data = { path = "../orbital-data" }
+send_wrapper = "0.6"
+palette = "0.7"
+
+[features]
+default = []
+hydrate = [
+    "leptos/hydrate",
+    "orbital-theme/hydrate",
+    "orbital-style/hydrate",
+    "orbital-motion/hydrate",
+]
+ssr = ["leptos/ssr", "orbital-theme/ssr", "orbital-style/ssr", "orbital-motion/ssr"]

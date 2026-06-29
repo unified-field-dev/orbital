@@ -1,0 +1,22 @@
+[package]
+name = "component-preview-e2e"
+version = "0.1.0"
+edition = "2021"
+
+[lints]
+workspace = true
+
+[features]
+default = ["preview"]
+preview = []
+
+[dependencies]
+orbital = { path = "../orbital", default-features = false, features = ["preview"] }
+orbital-base-components = { path = "../orbital-base-components" }
+orbital-core-components = { path = "../orbital-core-components", default-features = false, features = ["preview"] }
+orbital-macros = { path = "../orbital-macros" }
+leptos = { workspace = true, default-features = false, features = ["csr"] }
+icondata.workspace = true
+
+[dev-dependencies]
+trybuild = "1.0"

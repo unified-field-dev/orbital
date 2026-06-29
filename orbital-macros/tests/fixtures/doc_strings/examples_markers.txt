@@ -1,0 +1,22 @@
+Summary for marker tests.
+
+# Examples
+
+## Default variant
+<!-- default -->
+<!-- preview -->
+```rust
+view! { <div data-testid="default-variant">"default"</div> }
+```
+
+## Live preview only
+<!-- preview -->
+```rust
+view! { <div data-testid="live-variant">"live"</div> }
+```
+
+## Code only
+<!-- code-only -->
+```rust
+view! { <div>"hidden"</div> }
+```

@@ -1,0 +1,25 @@
+[package]
+name = "orbital-preview-frontend"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[lints]
+workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+orbital-preview-app = { path = "../orbital-preview-app", default-features = false }
+leptos.workspace = true
+console_error_panic_hook.workspace = true
+console_log.workspace = true
+log.workspace = true
+wasm-bindgen.workspace = true
+
+[features]
+hydrate = [
+    "leptos/hydrate",
+    "orbital-preview-app/hydrate",
+]
