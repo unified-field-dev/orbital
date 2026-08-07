@@ -88,8 +88,7 @@ impl PreviewCatalog {
 
     /// Sort by section / category / group / slug and return the merged list.
     pub fn into_sorted_vec(mut self) -> Vec<&'static PreviewRegistration> {
-        self.items
-            .sort_by(|a, b| preview_registration_cmp(a, b));
+        self.items.sort_by(|a, b| preview_registration_cmp(a, b));
         self.items
     }
 }
