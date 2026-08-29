@@ -153,4 +153,31 @@ test.describe("history preview", () => {
     await expect(jordanHeader).toHaveAttribute("aria-expanded", "true");
     await expect(preview.locator("[data-history-entry-id='group-a-0']")).toBeVisible();
   });
+
+  test("empty client list shows custom empty slot sad path", async ({ page }) => {
+    await openComponentPreview(page, "history-slots", "history-slots-preview");
+    const preview = page.getByTestId("history-slots-preview");
+    await expect(preview.getByTestId("history-custom-empty")).toBeVisible({ timeout: 30_000 });
+    await expect(preview.locator("[data-history-entry-id]")).toHaveCount(0);
+  });
+
+  test("filter chrome with no matches shows empty overlay sad path", async ({ page }) => {
+    await openComponentPreview(page, "history-filter", "history-filter-chrome-preview");
+    const preview = page.getByTestId("history-filter-chrome-preview");
+    await expect(preview.getByTestId("history-filter-chrome")).toBeVisible({ timeout: 30_000 });
+
+    const input = preview.locator(".orbital-history__filter-chrome input");
+    await input.fill("zzz-no-match-orbital-history");
+    await expect(preview.locator("[data-history-entry-id]")).toHaveCount(0);
+    await expect(
+      preview.getByTestId("history-no-matches-default").or(preview.getByTestId("history-empty-default")),
+    ).toBeVisible();
+  });
+
+  test("server fetch failure shows error overlay sad path", async ({ page }) => {
+    await openComponentPreview(page, "history-slots", "history-error-preview");
+    const preview = page.getByTestId("history-error-preview");
+    await expect(preview.getByTestId("history-error-default")).toBeVisible({ timeout: 30_000 });
+    await expect(preview.locator("[data-history-entry-id]")).toHaveCount(0);
+  });
 });
