@@ -104,10 +104,12 @@ mod focus {
     use web_sys::{Element, HtmlElement, KeyboardEvent};
 
     /// Elements a user can reach with Tab, before the visibility check.
-    const FOCUSABLE: &str = "a[href], area[href], button:not([disabled]), \
-        input:not([disabled]):not([type=\"hidden\"]), select:not([disabled]), \
-        textarea:not([disabled]), iframe, [contenteditable=\"true\"], \
-        [tabindex]:not([tabindex=\"-1\"])";
+    const FOCUSABLE: &str = "a[href]:not([tabindex=\"-1\"]), area[href]:not([tabindex=\"-1\"]), \
+        button:not([disabled]):not([tabindex=\"-1\"]), \
+        input:not([disabled]):not([type=\"hidden\"]):not([tabindex=\"-1\"]), \
+        select:not([disabled]):not([tabindex=\"-1\"]), \
+        textarea:not([disabled]):not([tabindex=\"-1\"]), iframe:not([tabindex=\"-1\"]), \
+        [contenteditable=\"true\"]:not([tabindex=\"-1\"]), [tabindex]:not([tabindex=\"-1\"])";
 
     /// The portal can attach the overlay a frame or two after `active` turns on.
     const MOUNT_FRAMES: u8 = 10;
