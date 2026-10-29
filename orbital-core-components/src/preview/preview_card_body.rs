@@ -32,6 +32,9 @@ pub fn OrbitalPreviewCardBody(
             max-width: 700px;
             padding: var(--orb-space-block-lg) var(--orb-space-inline-lg);
         }
+        .PreviewDemo > * {
+            max-width: 100%;
+        }
         .Toolbar {
             --orbital-card-content-padding: var(--orb-space-block-md) var(--orb-space-inline-lg);
             display: flex;
