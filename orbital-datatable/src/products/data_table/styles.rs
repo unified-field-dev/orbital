@@ -192,7 +192,6 @@ pub fn data_table_styles() -> &'static str {
     min-width: 0;
 }
 
-/* Wraps the actions under the search box on narrow screens instead of overlapping it. */
 .orbital-data-table__toolbar-search {
     flex: 0 1 280px;
     min-width: 160px;
