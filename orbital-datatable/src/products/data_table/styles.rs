@@ -202,15 +202,11 @@ pub fn data_table_styles() -> &'static str {
 
 .orbital-data-table__footer > div {
     width: 100%;
-    /* On narrow screens the pager moves under the range label and page size. */
-    flex-wrap: wrap;
-    row-gap: var(--orb-space-block-xs);
 }
 
 .orbital-data-table__footer-start {
     min-width: 0;
-    flex: 0 1 auto;
-    flex-wrap: wrap;
+    flex: 0 0 auto;
 }
 
 .orbital-data-table__footer-end {
