@@ -43,6 +43,7 @@ pub fn discussion_styles() -> &'static str {
     flex-direction: column;
     min-height: 0;
     width: 100%;
+    font-family: var(--orb-type-family-sans);
 }
 
 .orbital-discussion__scroll {
@@ -69,6 +70,12 @@ pub fn discussion_styles() -> &'static str {
     flex-direction: column;
     gap: var(--orbital-discussion-card-gap);
     min-width: 0;
+}
+
+.orbital-discussion__reply-node-inner--highlighted .orbital-discussion__reply-card {
+    outline: 2px solid var(--orb-color-brand-stroke);
+    outline-offset: 2px;
+    border-radius: var(--orb-radius-md);
 }
 
 .orbital-discussion__reply-node--connector .orbital-discussion__reply-node-inner {
