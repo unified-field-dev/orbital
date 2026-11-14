@@ -90,14 +90,6 @@ pub fn data_table_styles() -> &'static str {
     font-size: var(--orb-type-size-sm);
 }
 
-.orbital-data-table__overlay-skeleton {
-    display: flex;
-    flex-direction: column;
-    gap: var(--orb-space-block-sm);
-    width: 80%;
-    max-width: 400px;
-}
-
 .orbital-data-table__virtual-spacer td {
     padding: 0;
     border: none;
@@ -211,7 +203,9 @@ pub fn data_table_styles() -> &'static str {
     flex-wrap: wrap;
     align-items: center;
     gap: var(--orb-space-block-xs) var(--orb-space-inline-sm);
-    flex: 0 0 auto;
+    /* Shrinks down to its widest control, then wraps onto more lines, so a busy
+       slot never pushes the search box out of the row. */
+    flex: 0 1 auto;
 }
 
 .orbital-data-table__toolbar-actions {
