@@ -90,7 +90,7 @@ impl ActiveDescendantController {
 
     pub fn active(&self) -> Option<HtmlElement> {
         self.active
-            .try_with_value(|active| active.as_ref().map(|el| HtmlElement::clone(el)))
+            .try_with_value(|active| active.as_deref().cloned())
             .flatten()
     }
 
