@@ -236,7 +236,7 @@ mod tests {
             "<div class=\"orbital-markdown__table-scroll\" tabindex=\"0\"><table class=\"orbital-table orbital-markdown__table\"><thead class=\"orbital-table-header\">"
         ), "{html}");
         assert!(
-            html.contains("<tbody class=\"orbital-table-body\"><tr class=\"orbital-table-row\">"),
+            html.contains("<tbody class=\"orbital-table-body\">\n<tr class=\"orbital-table-row\">"),
             "{html}"
         );
         assert!(html.contains("</table></div>"), "{html}");
