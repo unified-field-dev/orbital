@@ -25,6 +25,8 @@ use crate::diff_view::DIFFVIEW_PREVIEW_REGISTRATION;
 #[cfg(feature = "preview")]
 use crate::divider::DIVIDER_PREVIEW_REGISTRATION;
 #[cfg(feature = "preview")]
+use crate::markdown_view::MARKDOWNVIEW_PREVIEW_REGISTRATION;
+#[cfg(feature = "preview")]
 use crate::extensions::LOADINGBAR_PREVIEW_REGISTRATION;
 #[cfg(feature = "preview")]
 use crate::extensions::THEMEPREVIEWMARKER_PREVIEW_REGISTRATION;
@@ -164,6 +166,7 @@ orbital_macros::preview_registrations! {
     &NAVIGATION_PREVIEW_REGISTRATION,
     &TABLIST_PREVIEW_REGISTRATION,
     &CODE_PREVIEW_REGISTRATION,
+    &MARKDOWNVIEW_PREVIEW_REGISTRATION,
     &COPYBUTTON_PREVIEW_REGISTRATION,
     &DIFFVIEW_PREVIEW_REGISTRATION,
     &CARD_PREVIEW_REGISTRATION,

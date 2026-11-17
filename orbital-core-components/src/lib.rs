@@ -22,6 +22,7 @@ pub mod hide_on_scroll;
 pub mod icon;
 pub mod layout;
 pub mod layout_box;
+pub mod markdown_view;
 pub mod material;
 pub mod rating;
 pub mod scroll_area;
@@ -106,6 +107,7 @@ pub use forms::{
 pub use grid::{Grid, GridConfig, GridItem, GridItemConfig};
 pub use icon::Icon;
 pub use layout_box::Box;
+pub use markdown_view::MarkdownView;
 pub use orbital_base_components::DemoBox;
 pub use orbital_base_components::{
     use_breakpoint, use_breakpoint_down, use_breakpoint_up, use_media_query,
@@ -187,6 +189,8 @@ pub use data::{
 pub use diff_view::DIFFVIEW_PREVIEW_REGISTRATION;
 #[cfg(feature = "preview")]
 pub use divider::DIVIDER_PREVIEW_REGISTRATION;
+#[cfg(feature = "preview")]
+pub use markdown_view::MARKDOWNVIEW_PREVIEW_REGISTRATION;
 #[cfg(feature = "preview")]
 pub use extensions::LOADINGBAR_PREVIEW_REGISTRATION;
 #[cfg(feature = "preview")]

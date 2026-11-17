@@ -35,6 +35,7 @@ pub fn render_to_html(
 
     let mut parse_options = Options::empty();
     parse_options.insert(Options::ENABLE_STRIKETHROUGH);
+    parse_options.insert(Options::ENABLE_TABLES);
 
     let parser = Parser::new_ext(&source, parse_options);
     let mut html_output = String::new();
@@ -51,6 +52,8 @@ pub fn render_to_html(
         options.image_url_schemes.as_deref(),
     );
 
+    html = add_block_classes(&html);
+
     if options.enable_images {
         html = html.replace(
             "<img src=",
@@ -63,6 +66,22 @@ pub fn render_to_html(
     }
 
     style_markdown_links(&html)
+}
+
+/// Class the block elements the sanitizer kept, and wrap each table so it
+/// scrolls sideways on its own when it's wider than the page. The wrapper
+/// takes focus so keyboard users can scroll it too.
+///
+/// Runs on sanitized output, where every tag is lowercase and only `th`/`td`
+/// carry attributes, so plain string matches are exact.
+fn add_block_classes(html: &str) -> String {
+    html.replace(
+        "<table>",
+        "<div class=\"orbital-markdown__table-scroll\" tabindex=\"0\"><table class=\"orbital-markdown__table\">",
+    )
+    .replace("</table>", "</table></div>")
+    .replace("<blockquote>", "<blockquote class=\"orbital-markdown__blockquote\">")
+    .replace("<hr>", "<hr class=\"orbital-markdown__rule\">")
 }
 
 #[cfg(test)]
@@ -185,5 +204,68 @@ mod tests {
     fn image_schemes_cannot_widen() {
         let html = render_images("![a](ftp://x.test/a.png)", Some(&["ftp"][..]));
         assert!(!html.contains("src="));
+    }
+
+    fn render_plain(md: &str) -> String {
+        render_to_html(md, &OrbitalMarkdownOptions::default(), &RenderContext::default())
+    }
+
+    const TABLE: &str = "| Feature | Status |\n|---|:---:|\n| [Rich content](/magnon/projects/1) | `Built` |\n| Charts | Planned |\n";
+
+    #[test]
+    fn gfm_table_renders_with_head_body_and_scroll_wrapper() {
+        let html = render_plain(TABLE);
+        assert!(html.contains(
+            "<div class=\"orbital-markdown__table-scroll\" tabindex=\"0\"><table class=\"orbital-markdown__table\"><thead>"
+        ), "{html}");
+        assert!(html.contains("<tbody>"), "{html}");
+        assert!(html.contains("</table></div>"), "{html}");
+        assert!(html.contains("<th>Feature</th>"), "{html}");
+    }
+
+    #[test]
+    fn gfm_table_cells_keep_links_code_and_alignment() {
+        let html = render_plain(TABLE);
+        assert!(html.contains("href=\"/magnon/projects/1\""), "{html}");
+        assert!(html.contains("orbital-link orbital-link--inline"), "{html}");
+        assert!(html.contains("<code>Built</code>"), "{html}");
+        assert!(html.contains("<td style=\"text-align: center\">"), "{html}");
+    }
+
+    #[test]
+    fn table_cell_style_other_than_alignment_is_dropped() {
+        let html = render_plain(
+            "<table><tr><td style=\"background:url(javascript:alert(1))\">x</td><td style=\"text-align: right; color: red\">y</td></tr></table>",
+        );
+        assert!(!html.contains("style="), "{html}");
+        assert!(html.contains("<td>x</td>"), "{html}");
+    }
+
+    #[test]
+    fn pipe_text_without_delimiter_row_stays_a_paragraph() {
+        let html = render_plain("a | b\nc | d");
+        assert!(!html.contains("<table"), "{html}");
+        assert!(html.starts_with("<p>"), "{html}");
+    }
+
+    #[test]
+    fn headings_blockquotes_and_rules_render() {
+        let html = render_plain("## Vision\n\n> **Tagline**\n\n---\n\n#### Small");
+        assert!(html.contains("<h2>Vision</h2>"), "{html}");
+        assert!(html.contains(
+            "<blockquote class=\"orbital-markdown__blockquote\">\n<p><strong>Tagline</strong></p>"
+        ), "{html}");
+        assert!(html.contains("<hr class=\"orbital-markdown__rule\">"), "{html}");
+        assert!(html.contains("<h4>Small</h4>"), "{html}");
+    }
+
+    #[test]
+    fn raw_html_block_tags_get_no_classes_or_handlers() {
+        let html = render_plain(
+            "<blockquote onclick=\"x()\">q</blockquote>\n\n<h2 id=\"spoof\" class=\"evil\">t</h2>",
+        );
+        assert!(!html.contains("onclick"), "{html}");
+        assert!(!html.contains("spoof"), "{html}");
+        assert!(!html.contains("evil"), "{html}");
     }
 }
