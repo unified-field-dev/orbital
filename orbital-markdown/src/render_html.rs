@@ -62,7 +62,7 @@ pub fn render_to_html(
     if options.enable_images {
         html = html.replace(
             "<img src=",
-            "<img class=\"orbital-markdown__image\" loading=\"lazy\" src=",
+            "<img class=\"orbital-image orbital-image--rounded orbital-markdown__image\" loading=\"lazy\" src=",
         );
     }
 
@@ -73,18 +73,26 @@ pub fn render_to_html(
     style_markdown_links(&html)
 }
 
-/// Class the block elements the sanitizer kept, and wrap each table so it
-/// scrolls sideways on its own when it's wider than the page. The wrapper
-/// takes focus so keyboard users can scroll it too.
+/// Class the block elements the sanitizer kept. Tables take Orbital `Table`
+/// classes and sit in a scroll box, so a wide table scrolls sideways on its
+/// own; the box takes focus so keyboard users can scroll it too.
 ///
 /// Runs on sanitized output, where every tag is lowercase and only `th`/`td`
-/// carry attributes, so plain string matches are exact.
+/// (`style`) and `details` (`open`) carry attributes, so plain string matches
+/// are exact. `<th` is matched with its `>` or ` ` so `<thead` is left alone.
 fn add_block_classes(html: &str) -> String {
     html.replace(
         "<table>",
-        "<div class=\"orbital-markdown__table-scroll\" tabindex=\"0\"><table class=\"orbital-markdown__table\">",
+        "<div class=\"orbital-markdown__table-scroll\" tabindex=\"0\"><table class=\"orbital-table orbital-markdown__table\">",
     )
     .replace("</table>", "</table></div>")
+    .replace("<thead>", "<thead class=\"orbital-table-header\">")
+    .replace("<tbody>", "<tbody class=\"orbital-table-body\">")
+    .replace("<tr>", "<tr class=\"orbital-table-row\">")
+    .replace("<th>", "<th class=\"orbital-table-header-cell\">")
+    .replace("<th style=", "<th class=\"orbital-table-header-cell\" style=")
+    .replace("<td>", "<td class=\"orbital-table-cell\">")
+    .replace("<td style=", "<td class=\"orbital-table-cell\" style=")
     .replace("<blockquote>", "<blockquote class=\"orbital-markdown__blockquote\">")
     .replace("<hr>", "<hr class=\"orbital-markdown__rule\">")
 }
@@ -225,11 +233,17 @@ mod tests {
     fn gfm_table_renders_with_head_body_and_scroll_wrapper() {
         let html = render_plain(TABLE);
         assert!(html.contains(
-            "<div class=\"orbital-markdown__table-scroll\" tabindex=\"0\"><table class=\"orbital-markdown__table\"><thead>"
+            "<div class=\"orbital-markdown__table-scroll\" tabindex=\"0\"><table class=\"orbital-table orbital-markdown__table\"><thead class=\"orbital-table-header\">"
         ), "{html}");
-        assert!(html.contains("<tbody>"), "{html}");
+        assert!(
+            html.contains("<tbody class=\"orbital-table-body\"><tr class=\"orbital-table-row\">"),
+            "{html}"
+        );
         assert!(html.contains("</table></div>"), "{html}");
-        assert!(html.contains("<th>Feature</th>"), "{html}");
+        assert!(
+            html.contains("<th class=\"orbital-table-header-cell\">Feature</th>"),
+            "{html}"
+        );
     }
 
     #[test]
@@ -238,7 +252,10 @@ mod tests {
         assert!(html.contains("href=\"/magnon/projects/1\""), "{html}");
         assert!(html.contains("orbital-link orbital-link--inline"), "{html}");
         assert!(html.contains("<code>Built</code>"), "{html}");
-        assert!(html.contains("<td style=\"text-align: center\">"), "{html}");
+        assert!(
+            html.contains("<td class=\"orbital-table-cell\" style=\"text-align: center\">"),
+            "{html}"
+        );
     }
 
     #[test]
@@ -247,7 +264,10 @@ mod tests {
             "<table><tr><td style=\"background:url(javascript:alert(1))\">x</td><td style=\"text-align: right; color: red\">y</td></tr></table>",
         );
         assert!(!html.contains("style="), "{html}");
-        assert!(html.contains("<td>x</td>"), "{html}");
+        assert!(
+            html.contains("<td class=\"orbital-table-cell\">x</td>"),
+            "{html}"
+        );
     }
 
     #[test]
@@ -282,14 +302,18 @@ mod tests {
     }
 
     #[test]
-    fn task_list_items_render_disabled_checkboxes() {
+    fn task_list_items_render_orbital_checkboxes() {
         let html = render_plain("- [x] Done\n- [ ] Open\n");
         assert!(html.contains(
-            "<li><input type=\"checkbox\" class=\"orbital-markdown__task\" disabled checked aria-label=\"Task\">"
+            "<li><span class=\"orbital-checkbox orbital-checkbox--checked orbital-checkbox--medium orbital-markdown__task\"><input class=\"orbital-checkbox__input\" type=\"checkbox\" disabled checked aria-label=\"Task\"><span aria-hidden=\"true\" class=\"orbital-checkbox__indicator\"><svg class=\"orbital-checkbox__check-icon\""
         ), "{html}");
         assert!(html.contains(
-            "<li><input type=\"checkbox\" class=\"orbital-markdown__task\" disabled aria-label=\"Task\">"
+            "<li><span class=\"orbital-checkbox orbital-checkbox--medium orbital-markdown__task\"><input class=\"orbital-checkbox__input\" type=\"checkbox\" disabled aria-label=\"Task\"><span aria-hidden=\"true\" class=\"orbital-checkbox__indicator\"></span></span>"
         ), "{html}");
+        assert!(
+            !html.contains("<div"),
+            "task boxes must not put a div in a list item: {html}"
+        );
     }
 
     #[test]
@@ -300,13 +324,47 @@ mod tests {
     }
 
     #[test]
-    fn github_alert_renders_title_and_kind() {
-        let html = render_plain("> [!WARNING]\n> Deleting can't be undone.\n");
+    fn github_alert_renders_as_message_bar() {
+        let html = render_plain("> [!WARNING]\n> Deleting can't be undone.\n\nAfter.");
         assert!(html.contains(
-            "<blockquote class=\"orbital-markdown__alert orbital-markdown__alert--warning\">\n<p class=\"orbital-markdown__alert-title\">Warning</p>"
+            "<div class=\"orbital-message-bar orbital-message-bar--warning orbital-message-bar--multiline orbital-markdown__alert\" role=\"group\"><div class=\"orbital-message-bar__icon\"><svg"
         ), "{html}");
-        assert!(html.contains("Deleting can"), "{html}");
+        assert!(html.contains(
+            "<div class=\"orbital-message-bar-title\">Warning</div><blockquote class=\"orbital-message-bar-body orbital-markdown__alert-body\">"
+        ), "{html}");
+        assert!(
+            html.contains("</blockquote></div>\n<p>After.</p>"),
+            "{html}"
+        );
         assert!(!html.contains("[!WARNING]"), "{html}");
+    }
+
+    #[test]
+    fn alert_kinds_map_to_message_bar_intents() {
+        for (kind, intent, title) in [
+            ("NOTE", "info", "Note"),
+            ("TIP", "success", "Tip"),
+            ("IMPORTANT", "info", "Important"),
+            ("CAUTION", "error", "Caution"),
+        ] {
+            let html = render_plain(&format!("> [!{kind}]\n> x\n"));
+            assert!(
+                html.contains(&format!("orbital-message-bar--{intent} ")),
+                "{kind}: {html}"
+            );
+            assert!(html.contains(&format!(">{title}</div>")), "{kind}: {html}");
+        }
+    }
+
+    #[test]
+    fn quote_nested_in_an_alert_closes_in_order() {
+        let html = render_plain("> [!NOTE]\n> outer\n>\n> > inner\n\nAfter.");
+        assert_eq!(html.matches("<blockquote").count(), 2, "{html}");
+        assert!(
+            html.contains("inner</p>\n</blockquote>\n</blockquote></div>"),
+            "{html}"
+        );
+        assert!(html.ends_with("<p>After.</p>\n"), "{html}");
     }
 
     #[test]

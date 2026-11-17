@@ -3,11 +3,32 @@ use orbital_macros::component_doc;
 use orbital_markdown::{markdown_styles, render_to_html, OrbitalMarkdownOptions, RenderContext};
 use orbital_style::inject_style;
 
+use crate::data::image::image_styles;
+use crate::data::table::table_styles;
+use crate::feedback::message_bar::message_bar_styles;
+use crate::forms::checkbox::checkbox_styles;
 use crate::link_styles;
+
+/// Inject every stylesheet rendered Markdown draws on: the prose sheet plus
+/// the components whose markup it reuses (Link, Table, Checkbox, MessageBar,
+/// Image), under the ids those components use themselves.
+pub(crate) fn inject_markdown_styles() {
+    inject_style("orbital-markdown", markdown_styles());
+    inject_style("orbital-link", link_styles());
+    inject_style("orbital-table", table_styles());
+    inject_style("orbital-checkbox", checkbox_styles());
+    inject_style("orbital-message-bar", message_bar_styles());
+    inject_style("orbital-image", image_styles());
+}
 
 /// MarkdownView shows saved Markdown as formatted, sanitized text: headings,
 /// lists and task lists, links (bare URLs too), code, images, quotes, GitHub
 /// alerts (`> [!NOTE]`), collapsible `<details>`, rules and GFM tables.
+///
+/// Tables, task boxes, alerts, images and links come out as Orbital `Table`,
+/// `Checkbox`, `MessageBar`, `Image` and `Link` markup, and headings follow the
+/// `Title3` / `Subtitle1` / `Body1Strong` ramp, so a description reads like
+/// the rest of the page.
 ///
 /// It renders with `orbital-markdown`, the same renderer as the
 /// [`MarkdownEditor`](crate::MarkdownEditor) Preview tab, so what people
@@ -87,8 +108,7 @@ pub fn MarkdownView(
     #[prop(optional, into)]
     testid: MaybeProp<String>,
 ) -> impl IntoView {
-    inject_style("orbital-markdown", markdown_styles());
-    inject_style("orbital-link", link_styles());
+    inject_markdown_styles();
 
     let render_options = StoredValue::new(render_options.unwrap_or(OrbitalMarkdownOptions {
         enable_images: true,

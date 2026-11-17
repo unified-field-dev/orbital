@@ -1,6 +1,6 @@
 use leptos::{ev, html, prelude::*};
 use orbital_macros::component_doc;
-use orbital_markdown::{markdown_styles, render_to_html, OrbitalMarkdownOptions, RenderContext};
+use orbital_markdown::{render_to_html, OrbitalMarkdownOptions, RenderContext};
 use orbital_style::inject_style;
 use wasm_bindgen::JsCast;
 
@@ -136,7 +136,7 @@ pub fn MarkdownEditor(
     render_options: Option<OrbitalMarkdownOptions>,
 ) -> impl IntoView {
     inject_style("orbital-markdown-editor", markdown_editor_styles());
-    inject_style("orbital-markdown", markdown_styles());
+    crate::markdown_view::inject_markdown_styles();
     inject_style("orbital-link", link_styles());
 
     let selected_tab = RwSignal::new(WRITE_TAB.to_string());

@@ -12,7 +12,7 @@ async function open(page: Page) {
 test.describe("markdown view preview", () => {
   test("MV-01: a GFM table renders with a header row and body rows", async ({ page }) => {
     const view = await open(page);
-    const table = view.locator("table.orbital-markdown__table");
+    const table = view.locator("table.orbital-table.orbital-markdown__table");
     await expect(table).toBeVisible();
     await expect(table.locator("thead th")).toHaveText(["Feature", "Crate", "Status"]);
     await expect(table.locator("tbody tr")).toHaveCount(3);
@@ -29,6 +29,13 @@ test.describe("markdown view preview", () => {
 
   test("MV-02: blockquote, heading and rule render", async ({ page }) => {
     const view = await open(page);
+    // Headings sit on the Subtitle1 step, body text on Body1.
+    const sizes = await view.evaluate((el) => ({
+      body: getComputedStyle(el).fontSize,
+      h2: getComputedStyle(el.querySelector("h2")!).fontSize,
+    }));
+    expect(parseFloat(sizes.h2)).toBeGreaterThan(parseFloat(sizes.body));
+    expect(parseFloat(sizes.h2)).toBeLessThanOrEqual(16);
     await expect(view.locator("blockquote strong")).toHaveText("Product UI in Rust.");
     await expect(view.getByRole("heading", { name: "Features", level: 2 })).toBeVisible();
     await expect(view.locator("hr.orbital-markdown__rule")).toHaveCount(1);
@@ -57,6 +64,11 @@ test.describe("markdown view preview", () => {
     await expect(boxes.nth(0)).toBeChecked();
     await expect(boxes.nth(1)).not.toBeChecked();
     await expect(boxes.nth(0)).toBeDisabled();
+    const indicators = page
+      .getByTestId("markdown-view-blocks")
+      .locator(".orbital-checkbox .orbital-checkbox__indicator");
+    await expect(indicators).toHaveCount(2);
+    await expect(indicators.nth(0).locator("svg")).toBeVisible();
   });
 
   test("MV-05: a bare URL, an alert and a code block render", async ({ page }) => {
@@ -66,8 +78,9 @@ test.describe("markdown view preview", () => {
       "href",
       "https://example.com/docs",
     );
-    const alert = view.locator(".orbital-markdown__alert--warning");
-    await expect(alert.locator(".orbital-markdown__alert-title")).toHaveText("Warning");
+    const alert = view.locator(".orbital-message-bar.orbital-message-bar--warning");
+    await expect(alert.locator(".orbital-message-bar-title")).toHaveText("Warning");
+    await expect(alert.locator(".orbital-message-bar__icon svg")).toBeVisible();
     await expect(alert).toContainText("Deleting a project can't be undone.");
     const code = view.locator("pre.orbital-markdown__code-block");
     await expect(code).toHaveText("cargo leptos watch");
