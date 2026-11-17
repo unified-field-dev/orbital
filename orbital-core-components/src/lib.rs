@@ -190,8 +190,6 @@ pub use diff_view::DIFFVIEW_PREVIEW_REGISTRATION;
 #[cfg(feature = "preview")]
 pub use divider::DIVIDER_PREVIEW_REGISTRATION;
 #[cfg(feature = "preview")]
-pub use markdown_view::MARKDOWNVIEW_PREVIEW_REGISTRATION;
-#[cfg(feature = "preview")]
 pub use extensions::LOADINGBAR_PREVIEW_REGISTRATION;
 #[cfg(feature = "preview")]
 pub use feedback::{
@@ -217,6 +215,8 @@ pub use forms::{
 };
 #[cfg(feature = "preview")]
 pub use grid::GRID_PREVIEW_REGISTRATION;
+#[cfg(feature = "preview")]
+pub use markdown_view::MARKDOWNVIEW_PREVIEW_REGISTRATION;
 #[cfg(feature = "preview")]
 pub use navigation::anchor::ANCHOR_PREVIEW_REGISTRATION;
 #[cfg(feature = "preview")]

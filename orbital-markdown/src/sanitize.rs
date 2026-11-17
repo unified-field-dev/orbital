@@ -9,9 +9,32 @@ pub fn sanitize_html(
     image_url_schemes: Option<&[String]>,
 ) -> String {
     let mut tags: HashSet<&str> = [
-        "p", "strong", "em", "del", "code", "pre", "a", "ul", "ol", "li", "br", "sup",
-        "h1", "h2", "h3", "h4", "h5", "h6", "blockquote", "hr", "table", "thead", "tbody",
-        "tr", "th", "td",
+        "p",
+        "strong",
+        "em",
+        "del",
+        "code",
+        "pre",
+        "a",
+        "ul",
+        "ol",
+        "li",
+        "br",
+        "sup",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6",
+        "blockquote",
+        "hr",
+        "table",
+        "thead",
+        "tbody",
+        "tr",
+        "th",
+        "td",
     ]
     .into_iter()
     .collect();
@@ -52,14 +75,16 @@ pub fn sanitize_html(
     let image_schemes: Option<Vec<String>> =
         image_url_schemes.map(|schemes| schemes.iter().map(|s| s.to_ascii_lowercase()).collect());
     let mut builder = ammonia::Builder::default();
-    builder.attribute_filter(move |element, attribute, value| match (element, attribute) {
-        ("th" | "td", "style") => cell_alignment(value).map(Into::into),
-        ("img", "src") => match (&image_schemes, url_scheme(value)) {
-            (Some(schemes), Some(scheme)) if !schemes.contains(&scheme) => None,
+    builder.attribute_filter(
+        move |element, attribute, value| match (element, attribute) {
+            ("th" | "td", "style") => cell_alignment(value).map(Into::into),
+            ("img", "src") => match (&image_schemes, url_scheme(value)) {
+                (Some(schemes), Some(scheme)) if !schemes.contains(&scheme) => None,
+                _ => Some(value.into()),
+            },
             _ => Some(value.into()),
         },
-        _ => Some(value.into()),
-    });
+    );
 
     let cleaned = builder
         .tags(tags)

@@ -207,7 +207,11 @@ mod tests {
     }
 
     fn render_plain(md: &str) -> String {
-        render_to_html(md, &OrbitalMarkdownOptions::default(), &RenderContext::default())
+        render_to_html(
+            md,
+            &OrbitalMarkdownOptions::default(),
+            &RenderContext::default(),
+        )
     }
 
     const TABLE: &str = "| Feature | Status |\n|---|:---:|\n| [Rich content](/magnon/projects/1) | `Built` |\n| Charts | Planned |\n";
@@ -255,7 +259,10 @@ mod tests {
         assert!(html.contains(
             "<blockquote class=\"orbital-markdown__blockquote\">\n<p><strong>Tagline</strong></p>"
         ), "{html}");
-        assert!(html.contains("<hr class=\"orbital-markdown__rule\">"), "{html}");
+        assert!(
+            html.contains("<hr class=\"orbital-markdown__rule\">"),
+            "{html}"
+        );
         assert!(html.contains("<h4>Small</h4>"), "{html}");
     }
 

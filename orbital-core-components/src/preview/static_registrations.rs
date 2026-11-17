@@ -25,8 +25,6 @@ use crate::diff_view::DIFFVIEW_PREVIEW_REGISTRATION;
 #[cfg(feature = "preview")]
 use crate::divider::DIVIDER_PREVIEW_REGISTRATION;
 #[cfg(feature = "preview")]
-use crate::markdown_view::MARKDOWNVIEW_PREVIEW_REGISTRATION;
-#[cfg(feature = "preview")]
 use crate::extensions::LOADINGBAR_PREVIEW_REGISTRATION;
 #[cfg(feature = "preview")]
 use crate::extensions::THEMEPREVIEWMARKER_PREVIEW_REGISTRATION;
@@ -112,6 +110,8 @@ use crate::icon::ICON_PREVIEW_REGISTRATION;
 use crate::layout::{CONTENTWITHASIDE_PREVIEW_REGISTRATION, LAYOUT_PREVIEW_REGISTRATION};
 #[cfg(feature = "preview")]
 use crate::layout_box::BOX_PREVIEW_REGISTRATION;
+#[cfg(feature = "preview")]
+use crate::markdown_view::MARKDOWNVIEW_PREVIEW_REGISTRATION;
 #[cfg(feature = "preview")]
 use crate::material::MATERIAL_PREVIEW_REGISTRATION;
 #[cfg(feature = "preview")]
