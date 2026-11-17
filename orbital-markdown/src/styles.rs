@@ -127,6 +127,28 @@ pub const fn markdown_styles() -> &'static str {
     margin: 0 var(--orb-space-inline-sm) 0 0;
 }
 
+/* Read-only, not unavailable: keep Checkbox's normal colours, not its
+   disabled grey, so a done item reads as checked. */
+.orbital-markdown__task:has(.orbital-checkbox__input:disabled),
+.orbital-markdown__task .orbital-checkbox__input:disabled {
+    color: inherit;
+    cursor: default;
+}
+
+.orbital-markdown__task .orbital-checkbox__input:disabled ~ .orbital-checkbox__indicator {
+    background-color: transparent;
+    border-color: var(--orb-color-border-accessible);
+    color: inherit;
+}
+
+.orbital-markdown__task.orbital-checkbox--checked
+    .orbital-checkbox__input:disabled
+    ~ .orbital-checkbox__indicator {
+    background-color: var(--orb-color-brand-compound-bg);
+    border-color: var(--orb-color-brand-compound-bg);
+    color: var(--orb-color-text-on-brand);
+}
+
 /* GitHub alerts: MessageBar markup; the quote is the bar's body. */
 .orbital-markdown__alert {
     margin: var(--orb-space-block-sm) 0;
