@@ -2,6 +2,7 @@
 
 mod citation_style;
 mod citations;
+mod events;
 mod links;
 mod mention_style;
 mod mentions;

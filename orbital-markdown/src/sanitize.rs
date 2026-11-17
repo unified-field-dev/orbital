@@ -35,6 +35,8 @@ pub fn sanitize_html(
         "tr",
         "th",
         "td",
+        "details",
+        "summary",
     ]
     .into_iter()
     .collect();
@@ -63,6 +65,7 @@ pub fn sanitize_html(
         // Column alignment from `|:--:|`; the filter keeps only `text-align`.
         ("th", ["style"].into_iter().collect()),
         ("td", ["style"].into_iter().collect()),
+        ("details", ["open"].into_iter().collect()),
     ]);
 
     if allow_images {

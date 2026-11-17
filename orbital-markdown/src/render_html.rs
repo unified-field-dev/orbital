@@ -1,6 +1,7 @@
-use pulldown_cmark::{html, Options, Parser};
+use pulldown_cmark::{html, Options, Parser, TextMergeStream};
 
 use crate::citations::{replace_citation_refs, strip_duplicate_images, CitationRef};
+use crate::events::{expand_placeholders, strip_placeholders, transform};
 use crate::links::style_markdown_links;
 use crate::mentions::{prepare_mention_markdown, replace_mention_links};
 use crate::options::OrbitalMarkdownOptions;
@@ -23,10 +24,11 @@ pub fn render_to_html(
         return String::new();
     }
 
+    let markdown = strip_placeholders(markdown);
     let mut source = if options.enable_images {
-        strip_duplicate_images(markdown, ctx.attachment_urls)
+        strip_duplicate_images(&markdown, ctx.attachment_urls)
     } else {
-        markdown.to_string()
+        markdown
     };
 
     if options.enable_mention_refs {
@@ -36,10 +38,12 @@ pub fn render_to_html(
     let mut parse_options = Options::empty();
     parse_options.insert(Options::ENABLE_STRIKETHROUGH);
     parse_options.insert(Options::ENABLE_TABLES);
+    parse_options.insert(Options::ENABLE_TASKLISTS);
+    parse_options.insert(Options::ENABLE_GFM);
 
-    let parser = Parser::new_ext(&source, parse_options);
+    let parser = TextMergeStream::new(Parser::new_ext(&source, parse_options));
     let mut html_output = String::new();
-    html::push_html(&mut html_output, parser);
+    html::push_html(&mut html_output, transform(parser).into_iter());
 
     let mut html = html_output;
     if options.enable_mention_refs {
@@ -52,6 +56,7 @@ pub fn render_to_html(
         options.image_url_schemes.as_deref(),
     );
 
+    html = expand_placeholders(&html);
     html = add_block_classes(&html);
 
     if options.enable_images {
@@ -274,5 +279,77 @@ mod tests {
         assert!(!html.contains("onclick"), "{html}");
         assert!(!html.contains("spoof"), "{html}");
         assert!(!html.contains("evil"), "{html}");
+    }
+
+    #[test]
+    fn task_list_items_render_disabled_checkboxes() {
+        let html = render_plain("- [x] Done\n- [ ] Open\n");
+        assert!(html.contains(
+            "<li><input type=\"checkbox\" class=\"orbital-markdown__task\" disabled checked aria-label=\"Task\">"
+        ), "{html}");
+        assert!(html.contains(
+            "<li><input type=\"checkbox\" class=\"orbital-markdown__task\" disabled aria-label=\"Task\">"
+        ), "{html}");
+    }
+
+    #[test]
+    fn raw_inputs_and_placeholder_characters_do_not_render() {
+        let html = render_plain("<input type=\"text\" value=\"x\"> a\u{E000}b \u{E013}c");
+        assert!(!html.contains("<input"), "{html}");
+        assert!(html.contains("ab c"), "{html}");
+    }
+
+    #[test]
+    fn github_alert_renders_title_and_kind() {
+        let html = render_plain("> [!WARNING]\n> Deleting can't be undone.\n");
+        assert!(html.contains(
+            "<blockquote class=\"orbital-markdown__alert orbital-markdown__alert--warning\">\n<p class=\"orbital-markdown__alert-title\">Warning</p>"
+        ), "{html}");
+        assert!(html.contains("Deleting can"), "{html}");
+        assert!(!html.contains("[!WARNING]"), "{html}");
+    }
+
+    #[test]
+    fn raw_alert_class_stays_a_plain_quote() {
+        let html = render_plain("<blockquote class=\"markdown-alert-note\">x</blockquote>");
+        assert!(!html.contains("alert"), "{html}");
+        assert!(html.contains("orbital-markdown__blockquote"), "{html}");
+    }
+
+    #[test]
+    fn details_and_summary_render_without_handlers() {
+        let html = render_plain(
+            "<details open ontoggle=\"x()\">\n<summary>More</summary>\n\nHidden **text**\n\n</details>",
+        );
+        assert!(html.contains("<details open=\"\">"), "{html}");
+        assert!(html.contains("<summary>More</summary>"), "{html}");
+        assert!(html.contains("<strong>text</strong>"), "{html}");
+        assert!(!html.contains("ontoggle"), "{html}");
+    }
+
+    #[test]
+    fn bare_urls_become_links() {
+        let html = render_plain("Docs at https://example.com/docs?a=1&b=2, and more.");
+        assert!(
+            html.contains("href=\"https://example.com/docs?a=1&amp;b=2\""),
+            "{html}"
+        );
+        assert!(html.contains("orbital-link orbital-link--inline"), "{html}");
+        assert!(
+            html.contains(">https://example.com/docs?a=1&amp;b=2</a>, and more."),
+            "{html}"
+        );
+    }
+
+    #[test]
+    fn urls_in_code_links_and_other_schemes_stay_text() {
+        let html = render_plain(
+            "`https://a.test` and [https://b.test](https://c.test)\n\n```\nhttps://d.test\n```\n\njavascript:alert(1) ftp://e.test",
+        );
+        assert!(html.contains("<code>https://a.test</code>"), "{html}");
+        assert_eq!(html.matches("<a ").count(), 1, "{html}");
+        assert!(html.contains("https://d.test\n</code></pre>"), "{html}");
+        assert!(!html.contains("href=\"javascript"), "{html}");
+        assert!(!html.contains("href=\"ftp"), "{html}");
     }
 }

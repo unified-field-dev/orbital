@@ -6,7 +6,8 @@ use orbital_style::inject_style;
 use crate::link_styles;
 
 /// MarkdownView shows saved Markdown as formatted, sanitized text: headings,
-/// lists, links, code, quotes, rules and GFM tables.
+/// lists and task lists, links (bare URLs too), code, images, quotes, GitHub
+/// alerts (`> [!NOTE]`), collapsible `<details>`, rules and GFM tables.
 ///
 /// It renders with `orbital-markdown`, the same renderer as the
 /// [`MarkdownEditor`](crate::MarkdownEditor) Preview tab, so what people
@@ -44,6 +45,17 @@ use crate::link_styles;
 /// }
 /// ```
 ///
+/// ## Lists, alerts and details
+/// Task lists, a bare link, a GitHub alert, a code block and a collapsible section.
+/// <!-- preview -->
+/// ```rust
+/// view! {
+///     <div data-testid="markdown-view-blocks">
+///         <MarkdownView markdown="- [x] Write the scope\n- [ ] Review it\n\nDocs live at https://example.com/docs.\n\n> [!WARNING]\n> Deleting a project can't be undone.\n\n```\ncargo leptos watch\n```\n\n<details>\n<summary>Release notes</summary>\n\nShipped `MarkdownView`.\n\n</details>" />
+///     </div>
+/// }
+/// ```
+///
 /// ## Wide table
 /// A table wider than its container scrolls inside its own box.
 /// <!-- preview -->
@@ -65,7 +77,7 @@ pub fn MarkdownView(
     /// Markdown source to render.
     #[prop(into)]
     markdown: Signal<String>,
-    /// Markdown features; defaults to plain Markdown with no citations, mentions, or images.
+    /// Markdown features; defaults to images on, with no citations or mentions.
     #[prop(optional)]
     render_options: Option<OrbitalMarkdownOptions>,
     /// Extra CSS class names merged onto the root element.
@@ -78,7 +90,10 @@ pub fn MarkdownView(
     inject_style("orbital-markdown", markdown_styles());
     inject_style("orbital-link", link_styles());
 
-    let render_options = StoredValue::new(render_options.unwrap_or_default());
+    let render_options = StoredValue::new(render_options.unwrap_or(OrbitalMarkdownOptions {
+        enable_images: true,
+        ..Default::default()
+    }));
     let html = Memo::new(move |_| {
         markdown.with(|text| {
             render_options

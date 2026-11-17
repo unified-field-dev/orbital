@@ -1,10 +1,11 @@
-/// Stylesheet for rendered Markdown blocks: tables, headings, blockquotes and
-/// rules.
+/// Stylesheet for rendered Markdown: tables, code, images, task lists, alerts,
+/// quotes, rules, headings and `<details>`.
 ///
-/// Table rules key on the classes [`render_to_html`](crate::render_to_html)
-/// adds, so a table looks right inside any container. Heading, quote and rule
-/// spacing applies under an `orbital-markdown` root, such as Orbital's
-/// `MarkdownView`. Inject it once with `inject_style("orbital-markdown", markdown_styles())`.
+/// Rules on the classes [`render_to_html`](crate::render_to_html) adds (tables,
+/// code blocks, images, alerts) work inside any container. Heading, inline
+/// code, task-list and `<details>` rules apply under an `orbital-markdown`
+/// root, such as Orbital's `MarkdownView`. Inject it once with
+/// `inject_style("orbital-markdown", markdown_styles())`.
 #[must_use]
 pub const fn markdown_styles() -> &'static str {
     r#"
@@ -70,6 +71,104 @@ pub const fn markdown_styles() -> &'static str {
     margin: var(--orb-space-block-lg) 0;
     border: none;
     border-top: var(--orb-stroke-thin) solid var(--orb-color-border-subtle);
+}
+
+.orbital-markdown :not(pre) > code {
+    padding: 0 var(--orb-space-inline-2xs);
+    border-radius: var(--orb-radius-sm);
+    background-color: var(--orb-color-code-bg);
+    color: var(--orb-color-code-fg);
+    font-family: var(--orb-type-family-mono);
+    font-size: 0.9em;
+}
+
+.orbital-markdown__code-block {
+    margin: var(--orb-space-block-sm) 0;
+    padding: var(--orb-space-block-sm) var(--orb-space-inline-md);
+    overflow-x: auto;
+    border-radius: var(--orb-radius-md);
+    background-color: var(--orb-color-code-bg);
+    color: var(--orb-color-code-fg);
+    font-family: var(--orb-type-family-mono);
+    font-size: var(--orb-type-size-sm);
+    line-height: var(--orb-type-line-md);
+    overflow-wrap: normal;
+    white-space: pre;
+}
+
+.orbital-markdown__code-block code {
+    font: inherit;
+    color: inherit;
+}
+
+.orbital-markdown__image {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: var(--orb-space-block-xs) 0;
+    border-radius: var(--orb-radius-sm);
+}
+
+.orbital-markdown li:has(> .orbital-markdown__task),
+.orbital-markdown li:has(> p > .orbital-markdown__task) {
+    list-style: none;
+}
+
+.orbital-markdown__task {
+    margin: 0 var(--orb-space-inline-xs) 0 calc(-1 * var(--orb-space-inline-lg));
+    vertical-align: middle;
+    accent-color: var(--orb-color-brand-bg);
+}
+
+.orbital-markdown__alert {
+    --orbital-markdown-alert-accent: var(--orb-color-brand-stroke);
+    --orbital-markdown-alert-title: var(--orb-color-brand-fg);
+    margin: var(--orb-space-block-sm) 0;
+    padding: var(--orb-space-block-xs) var(--orb-space-inline-md);
+    border-left: var(--orb-stroke-thicker) solid var(--orbital-markdown-alert-accent);
+    border-radius: var(--orb-radius-sm);
+    background-color: var(--orb-color-surface-subtle);
+}
+
+.orbital-markdown__alert > :last-child {
+    margin-bottom: 0;
+}
+
+.orbital-markdown__alert-title {
+    margin: 0 0 var(--orb-space-block-2xs);
+    color: var(--orbital-markdown-alert-title);
+    font-weight: var(--orb-type-weight-semibold);
+}
+
+.orbital-markdown__alert--tip {
+    --orbital-markdown-alert-accent: var(--orb-color-status-success-border);
+    --orbital-markdown-alert-title: var(--orb-color-status-success-fg);
+}
+
+.orbital-markdown__alert--warning {
+    --orbital-markdown-alert-accent: var(--orb-color-status-warning-border);
+    --orbital-markdown-alert-title: var(--orb-color-status-warning-fg);
+}
+
+.orbital-markdown__alert--caution {
+    --orbital-markdown-alert-accent: var(--orb-color-status-danger-border);
+    --orbital-markdown-alert-title: var(--orb-color-status-danger-fg);
+}
+
+.orbital-markdown details {
+    margin: var(--orb-space-block-sm) 0;
+    padding: var(--orb-space-block-xs) var(--orb-space-inline-md);
+    border: var(--orb-stroke-thin) solid var(--orb-color-border-subtle);
+    border-radius: var(--orb-radius-md);
+}
+
+.orbital-markdown summary {
+    cursor: pointer;
+    font-weight: var(--orb-type-weight-semibold);
+}
+
+.orbital-markdown details[open] > summary {
+    margin-bottom: var(--orb-space-block-xs);
 }
 
 .orbital-markdown__table-scroll {

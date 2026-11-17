@@ -2,7 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { test, expect, type Page } from "@playwright/test";
 import { openComponentPreview } from "../lib/preview/navigation";
 
-const EXAMPLES = ["markdown-view-preview", "markdown-view-wide"];
+const EXAMPLES = ["markdown-view-preview", "markdown-view-blocks", "markdown-view-wide"];
 
 async function open(page: Page) {
   await openComponentPreview(page, "markdown-view");
@@ -48,6 +48,38 @@ test.describe("markdown view preview", () => {
     expect(box?.width ?? 0).toBeLessThanOrEqual(320);
     await scroller.focus();
     await expect(scroller).toBeFocused();
+  });
+
+  test("MV-04: task list items show read-only checkboxes", async ({ page }) => {
+    await openComponentPreview(page, "markdown-view");
+    const boxes = page.getByTestId("markdown-view-blocks").getByRole("checkbox", { name: "Task" });
+    await expect(boxes).toHaveCount(2);
+    await expect(boxes.nth(0)).toBeChecked();
+    await expect(boxes.nth(1)).not.toBeChecked();
+    await expect(boxes.nth(0)).toBeDisabled();
+  });
+
+  test("MV-05: a bare URL, an alert and a code block render", async ({ page }) => {
+    await openComponentPreview(page, "markdown-view");
+    const view = page.getByTestId("markdown-view-blocks");
+    await expect(view.getByRole("link", { name: "https://example.com/docs" })).toHaveAttribute(
+      "href",
+      "https://example.com/docs",
+    );
+    const alert = view.locator(".orbital-markdown__alert--warning");
+    await expect(alert.locator(".orbital-markdown__alert-title")).toHaveText("Warning");
+    await expect(alert).toContainText("Deleting a project can't be undone.");
+    const code = view.locator("pre.orbital-markdown__code-block");
+    await expect(code).toHaveText("cargo leptos watch");
+    await expect(code).toHaveCSS("font-family", /mono|Mono|Consolas|Courier/);
+  });
+
+  test("MV-06: details opens when its summary is clicked", async ({ page }) => {
+    await openComponentPreview(page, "markdown-view");
+    const details = page.getByTestId("markdown-view-blocks").locator("details");
+    await expect(details.getByText("Shipped")).toBeHidden();
+    await details.locator("summary").click();
+    await expect(details.getByText("Shipped")).toBeVisible();
   });
 
   test("MV-A1: axe clean in dark and light at 390px and desktop", async ({ page }) => {
