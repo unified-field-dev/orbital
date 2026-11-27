@@ -60,7 +60,7 @@ where
         <Provider value=menu_injection>
             <AnchoredOverlay config=config overlay_trigger=overlay_trigger>
                 <OverlaySurface class=shell_class style=style data_testid=data_testid>
-                    <MenuKeyboardRegion autofocus=autofocus>
+                    <MenuKeyboardRegion autofocus=autofocus role="menu">
                         {children()}
                     </MenuKeyboardRegion>
                 </OverlaySurface>

@@ -113,9 +113,9 @@ use super::styles::scroll_area_styles;
 )]
 #[component]
 pub fn ScrollArea(
-    /// Primary scroll axis when true (horizontal); default is vertical.
-    #[prop(optional, default = false)]
-    horizontal: bool,
+    /// Primary scroll axis when true (horizontal); default is vertical. Accepts a signal so the axis can follow layout changes.
+    #[prop(optional, into)]
+    horizontal: Signal<bool>,
     /// Show themed scrollbar thumbs (default true).
     #[prop(optional, default = true)]
     show_scrollbar: bool,
@@ -137,6 +137,14 @@ pub fn ScrollArea(
     /// Optional `data-column-order` for consumers that track column layout on the scrollport.
     #[prop(optional, into)]
     scroll_data_column_order: MaybeProp<String>,
+    /// Put the scrollport in the tab order (`tabindex="0"`) so keyboard users can scroll it.
+    /// Turn on when the content may overflow and has no focusable children of its own.
+    #[prop(optional, default = false)]
+    focusable: bool,
+    /// Accessible name for the scrollport. When set, the scrollport is a `role="region"`
+    /// landmark with this label; pair it with `focusable`.
+    #[prop(optional, into)]
+    aria_label: MaybeProp<String>,
     /// Scrollable content inside the themed scrollbar chrome.
     children: Children,
 ) -> impl IntoView {
@@ -166,7 +174,7 @@ pub fn ScrollArea(
 
     let root_class = move || {
         let mut parts = vec!["orbital-scroll-area".to_string()];
-        if horizontal {
+        if horizontal.get() {
             parts.push("orbital-scroll-area--horizontal".to_string());
         } else {
             parts.push("orbital-scroll-area--vertical".to_string());
@@ -192,7 +200,7 @@ pub fn ScrollArea(
     };
 
     let content_class = move || {
-        if horizontal {
+        if horizontal.get() {
             "orbital-scroll-area__content orbital-scroll-area__content--sized orbital-scroll-area__content--horizontal"
                 .to_string()
         } else {
@@ -208,6 +216,9 @@ pub fn ScrollArea(
             node_ref=node_ref
             data-testid=scroll_testid
             data-column-order=scroll_data_column_order
+            tabindex=focusable.then_some("0")
+            role=move || aria_label.get().map(|_| "region")
+            aria-label=move || aria_label.get()
         >
             <div class=content_class>
                 {children()}

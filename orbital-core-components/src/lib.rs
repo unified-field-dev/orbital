@@ -52,15 +52,16 @@ pub use text::*;
 
 pub use button::{Button, ButtonAppearance, ButtonRef, ButtonShape, ButtonSize, ButtonType};
 pub use code::Code;
-pub use copy_button::CopyButton;
+pub use copy_button::{write_clipboard_text, CopyButton};
 pub use data::{
     link_styles, Avatar, AvatarColor, AvatarConfig, AvatarGroup, AvatarGroupLayout,
     AvatarGroupSize, AvatarShape, Breadcrumb, BreadcrumbButton, BreadcrumbDivider, BreadcrumbItem,
     Image, ImageConfig, ImageFit, ImageShape, Link, List, ListItem, ListItemTrailing,
     ListNavigationMode, ListSelectionMode, Persona, PersonaConfig, PersonaPrimaryText,
     PersonaQuaternaryText, PersonaSecondaryText, PersonaSize, PersonaTertiaryText,
-    PersonaTextAlignment, PersonaTextPosition, Table, TableBody, TableCell, TableCellLayout,
-    TableCellLayoutConfig, TableHeader, TableHeaderCell, TableHeaderCellConfig, TableRow,
+    PersonaTextAlignment, PersonaTextPosition, ResolvedTimestamp, Table, TableBody, TableCell,
+    TableCellLayout, TableCellLayoutConfig, TableHeader, TableHeaderCell, TableHeaderCellConfig,
+    TableRow, Timestamp, TimestampHoverCard, TimestampStyle, TimestampValue,
 };
 pub use diff_view::{diff_text, DiffHunk, DiffLayout, DiffLine, DiffLineKind, DiffSpan, DiffView};
 pub use divider::Divider;
@@ -84,25 +85,25 @@ pub use forms::{
     CalendarDayRenderer, CalendarMonthButtonProps, CalendarMonthButtonRenderer,
     CalendarWeekdayHeader, Checkbox, CheckboxSize, Color, ColorBind, ColorPicker,
     ColorPickerAppearance, ColorPickerBind, Combobox, ComboboxAppearance, ComboboxBind,
-    ComboboxOption, ComboboxOptionGroup, ComboboxSize, CompoundButton, CompoundButtonIconPosition,
-    DatePicker, DatePickerAppearance, DatePickerBind, DatePickerRule, DatePickerRuleTrigger,
-    DatetimeFormat, DatetimeTimezone, Dropdown, Emoji, EmojiPicker, EmojiPickerButton,
-    EmojiPickerRef, Field, FieldInjection, FieldOrientation, FieldValidationMessage,
-    FieldValidationState, FileList, FormBind, InfoLabel, InfoLabelInfo, InfoLabelSize,
-    InfoLabelWeight, Input, InputAppearance, InputBind, InputEvents, InputPrefix, InputRef,
-    InputRule, InputRuleTrigger, InputSize, InputSuffix, InputType, Label, LabelSize, LabelWeight,
-    MarkdownEditor, MenuButton, NumericStepper, NumericStepperAppearance, NumericStepperBind,
-    NumericStepperRule, NumericStepperRuleTrigger, NumericStepperSize, OptionBind,
-    OrbitalMarkdownOptions, PickerShortcut, PickerShortcutsBar, Radio, RadioGroup, RadioGroupBind,
-    RadioGroupLayout, RadioGroupRule, RadioGroupRuleTrigger, SearchBox, SearchBoxAppearance,
-    SearchBoxBind, SearchBoxEvents, Select, SelectAppearance, SelectBind, SelectOption, SelectRule,
-    SelectRuleTrigger, SelectSize, Slider, SliderAppearance, SliderBind, SliderLabel, SliderRule,
-    SliderRuleTrigger, SwatchPicker, SwatchPickerItem, SwatchPickerLayout, SwatchPickerShape,
-    SwatchPickerSize, Switch, SwitchBind, SwitchLabel, SwitchRule, SwitchRuleTrigger, Textarea,
-    TextareaAppearance, TextareaBind, TextareaEvents, TextareaRef, TextareaResize, TextareaRule,
-    TextareaRuleTrigger, TextareaSize, TimePicker, TimePickerAppearance, TimePickerBind,
-    ToggleButton, TransferList, TransferListChange, TransferListConfig, Upload, UploadConfig,
-    UploadDragger,
+    ComboboxOption, ComboboxOptionGroup, ComboboxSelected, ComboboxSize, CompoundButton,
+    CompoundButtonIconPosition, DatePicker, DatePickerAppearance, DatePickerBind, DatePickerRule,
+    DatePickerRuleTrigger, DatetimeFormat, DatetimeTimezone, Dropdown, Emoji, EmojiPicker,
+    EmojiPickerButton, EmojiPickerRef, Field, FieldInjection, FieldOrientation,
+    FieldValidationMessage, FieldValidationState, FileList, FormBind, InfoLabel, InfoLabelInfo,
+    InfoLabelSize, InfoLabelWeight, Input, InputAppearance, InputBind, InputEvents, InputPrefix,
+    InputRef, InputRule, InputRuleTrigger, InputSize, InputSuffix, InputType, Label, LabelSize,
+    LabelWeight, MarkdownEditor, MenuButton, NumericStepper, NumericStepperAppearance,
+    NumericStepperBind, NumericStepperRule, NumericStepperRuleTrigger, NumericStepperSize,
+    OptionBind, OrbitalMarkdownOptions, PickerShortcut, PickerShortcutsBar, Radio, RadioGroup,
+    RadioGroupBind, RadioGroupLayout, RadioGroupRule, RadioGroupRuleTrigger, SearchBox,
+    SearchBoxAppearance, SearchBoxBind, SearchBoxEvents, Select, SelectAppearance, SelectBind,
+    SelectOption, SelectRule, SelectRuleTrigger, SelectSize, Slider, SliderAppearance, SliderBind,
+    SliderLabel, SliderRule, SliderRuleTrigger, SwatchPicker, SwatchPickerItem, SwatchPickerLayout,
+    SwatchPickerShape, SwatchPickerSize, Switch, SwitchBind, SwitchLabel, SwitchRule,
+    SwitchRuleTrigger, Textarea, TextareaAppearance, TextareaBind, TextareaEvents, TextareaRef,
+    TextareaResize, TextareaRule, TextareaRuleTrigger, TextareaSize, TimePicker,
+    TimePickerAppearance, TimePickerBind, ToggleButton, TransferList, TransferListChange,
+    TransferListConfig, Upload, UploadConfig, UploadDragger,
 };
 pub use grid::{Grid, GridConfig, GridItem, GridItemConfig};
 pub use icon::Icon;
@@ -184,7 +185,7 @@ pub mod preview;
 pub use data::{
     AVATAR_PREVIEW_REGISTRATION, BREADCRUMB_PREVIEW_REGISTRATION, IMAGE_PREVIEW_REGISTRATION,
     LINK_PREVIEW_REGISTRATION, LIST_PREVIEW_REGISTRATION, PERSONA_PREVIEW_REGISTRATION,
-    TABLE_PREVIEW_REGISTRATION,
+    TABLE_PREVIEW_REGISTRATION, TIMESTAMP_PREVIEW_REGISTRATION,
 };
 #[cfg(feature = "preview")]
 pub use diff_view::DIFFVIEW_PREVIEW_REGISTRATION;
